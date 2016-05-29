@@ -11,7 +11,7 @@ namespace EventStore
 
         public EventConsumer(BlockingCollection<EventTransaction> writerQueue)
         {
-            _repository = new SQLiteEventRepository();
+            _repository = new SQLiteEventRepository(new SQLiteRepositoryConfiguration(@"test.db"));
             _writerQueue = writerQueue;
         }
 

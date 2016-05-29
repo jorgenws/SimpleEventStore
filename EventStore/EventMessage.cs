@@ -6,8 +6,6 @@ namespace EventStore
 {
     public class EventTransaction
     {
-        public Guid UserId { get; set; }
-        public Guid CompanyId { get; set; }
         public Event[] Events { get; set; }
 
         private SemaphoreSlim _semaphore = new SemaphoreSlim(0, 1);
@@ -21,11 +19,5 @@ namespace EventStore
         {
             _semaphore.Release();
         }
-    }
-
-    public class Event
-    {
-        public Guid Id { get; set; }
-        public string SerializedEvent { get; set; }
     }
 }

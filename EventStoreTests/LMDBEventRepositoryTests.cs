@@ -2,22 +2,33 @@
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
 namespace EventStoreTests
 {
     [TestFixture]
-    public class SQLiteEventRepositoryTests
+    public class LMDBEventRepositoryTests
     {
+        const string EnvironmentPath = @"c:\lmdb";
+
         public Guid aggregateId = Guid.Parse("{54A89539-D4CA-4061-AA6A-3F4719D8EBF3}");
+
+        private LMDBEventRepository _lmdbEventRepository;
+
+        [SetUp]
+        public void SetUp()
+        {
+            _lmdbEventRepository = new LMDBEventRepository(new LMDBRepositoryConfiguration(EnvironmentPath));
+        }
 
         [Test]
         public void EventIsSavedAndLoadedSuccesfully()
         {
             const string SomethingThatHappend = "some data that has happend";
 
-            var repository = GetInMemorySQLiteEventRepository();
+            var repository = _lmdbEventRepository;
 
             var events = new List<EventTransaction>();
             events.Add(new EventTransaction
@@ -42,9 +53,18 @@ namespace EventStoreTests
 
         }
 
-        private SQLiteEventRepository GetInMemorySQLiteEventRepository()
+        [TearDown]
+        public void TearDown()
         {
-            return new SQLiteEventRepository(new SQLiteRepositoryConfiguration("Data Source=:memory:"));
+            _lmdbEventRepository.Dispose();
+
+            var datafile = Path.Combine(EnvironmentPath, "data.mdb");
+            if (File.Exists(datafile))
+                File.Delete(datafile);
+
+            var lockfile = Path.Combine(EnvironmentPath, "lock.mdb");
+            if (File.Exists(lockfile))
+                File.Delete(lockfile);
         }
     }
 }
