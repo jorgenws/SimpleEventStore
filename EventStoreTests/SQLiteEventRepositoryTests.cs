@@ -42,6 +42,72 @@ namespace EventStoreTests
 
         }
 
+        [Test]
+        public void AllEventsInTransactionAreSavedAndLoadedSuccesfully()
+        {
+            const string SomethingThatHappend = "some data that has happend";
+
+            var repository = GetInMemorySQLiteEventRepository();
+
+            var events = new List<EventTransaction>();
+            events.Add(new EventTransaction
+            {
+                Events = new[] {
+                    new Event
+                    {
+                        AggregateId = aggregateId,
+                        SerializedEvent = Encoding.UTF8.GetBytes(SomethingThatHappend)
+                    },
+                    new Event
+                    {
+                        AggregateId = aggregateId,
+                        SerializedEvent = Encoding.UTF8.GetBytes(SomethingThatHappend)
+                    }
+                }
+            });
+
+            var success = repository.WriteEvents(events);
+
+            var eventsForAggregate = repository.GetEventsForAggregate(aggregateId);
+
+            Assert.IsTrue(success);
+
+            Assert.AreEqual(2, eventsForAggregate.Length);
+            Assert.AreEqual(SomethingThatHappend, Encoding.UTF8.GetString(eventsForAggregate[0].SerializedEvent));
+            Assert.AreEqual(SomethingThatHappend, Encoding.UTF8.GetString(eventsForAggregate[1].SerializedEvent));
+        }
+
+        [Test]
+        public void MultipleEventsAreSavedAndLoadedSuccesfully()
+        {
+            const string SomethingThatHappend = "some data that has happend";
+
+            var repository = GetInMemorySQLiteEventRepository();
+
+            var events = new List<EventTransaction>();
+            events.Add(new EventTransaction
+            {
+                Events = new[] {
+                    new Event
+                    {
+                        AggregateId = aggregateId,
+                        SerializedEvent = Encoding.UTF8.GetBytes(SomethingThatHappend)
+                    }
+                }
+            });
+
+            var success = repository.WriteEvents(events);
+            var success2 = repository.WriteEvents(events);
+
+            var eventsForAggregate = repository.GetEventsForAggregate(aggregateId);
+
+            Assert.IsTrue(success);
+            Assert.IsTrue(success2);
+
+            Assert.AreEqual(2, eventsForAggregate.Length);
+            Assert.AreEqual(SomethingThatHappend, Encoding.UTF8.GetString(eventsForAggregate.First().SerializedEvent));
+        }
+
         private SQLiteEventRepository GetInMemorySQLiteEventRepository()
         {
             return new SQLiteEventRepository(new SQLiteRepositoryConfiguration("Data Source=:memory:"));
