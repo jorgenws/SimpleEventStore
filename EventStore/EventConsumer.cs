@@ -9,9 +9,9 @@ namespace EventStore
         private IEventRepository _repository;
         private const uint MaxBatchSize = 1000;
 
-        public EventConsumer(BlockingCollection<EventTransaction> writerQueue)
+        public EventConsumer(BlockingCollection<EventTransaction> writerQueue, IEventRepository repository)
         {
-            _repository = new SQLiteEventRepository(new SQLiteRepositoryConfiguration(@"test.db"));
+            _repository = repository;
             _writerQueue = writerQueue;
         }
 

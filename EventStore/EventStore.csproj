@@ -54,6 +54,7 @@
     <Compile Include="EventConsumer.cs" />
     <Compile Include="EventStore.cs" />
     <Compile Include="EventMessage.cs" />
+    <Compile Include="EventStoreBuilder.cs" />
     <Compile Include="IEventRepository.cs" />
     <Compile Include="LMDBEventRepository.cs" />
     <Compile Include="LMDBRepositoryConfiguration.cs" />

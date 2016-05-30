@@ -10,13 +10,13 @@ namespace EventStore
 
         private const int BufferSize = 100000;
 
-        public EventStore()
+        public EventStore(IEventRepository repository)
         {
             _writerQueue = new BlockingCollection<EventTransaction>(BufferSize);
             
             //ToDo: Look into using continuation to catch that the task died and recreate it if possible.
             //ToDo: Add cancelation
-            _writerRunner = Task.Factory.StartNew(() => new EventConsumer(_writerQueue).Consume(),
+            _writerRunner = Task.Factory.StartNew(() => new EventConsumer(_writerQueue, repository).Consume(),
                                                         TaskCreationOptions.LongRunning);
         }
 
