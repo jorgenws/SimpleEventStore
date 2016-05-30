@@ -36,7 +36,7 @@ namespace EventStore
                     foreach (var @event in transaction.Events)
                     {
                         byte[] nextSerialNumber = BitConverter.GetBytes(_nextSerialNumber);
-                        byte[] aggregateId = @event.AggregateId.ToByteArray();
+                        byte[] aggregateId = transaction.AggregateId.ToByteArray();
 
                         tx.Put(eventDb, nextSerialNumber, @event.SerializedEvent, PutOptions.AppendData);
                         tx.Put(aggregateIndex, aggregateId, nextSerialNumber, PutOptions.AppendDuplicateData);
@@ -91,7 +91,7 @@ namespace EventStore
                 do
                 {
                     KeyValuePair<byte[], byte[]> eventId = aggregateIndexCursor.GetCurrent();
-                    events.Add(new Event { AggregateId = aggregateId, SerializedEvent = tx.Get(eventsDb, eventId.Value) });
+                    events.Add(new Event { SerializedEvent = tx.Get(eventsDb, eventId.Value) });
                 } while (aggregateIndexCursor.MoveNextDuplicate());
             }
 

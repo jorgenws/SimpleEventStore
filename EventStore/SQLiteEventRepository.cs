@@ -78,11 +78,11 @@ namespace EventStore
 
             try
             {
-                foreach (var eventTransaction in eventTransactionBatch)
+                foreach (EventTransaction eventTransaction in eventTransactionBatch)
                 {
                     foreach (var @event in eventTransaction.Events)
                     {
-                        command.Parameters[aggregateIdParameter].Value = @event.AggregateId.ToString("D");
+                        command.Parameters[aggregateIdParameter].Value = eventTransaction.AggregateId.ToString("D");
                         command.Parameters[serializedEventParameter].Value = @event.SerializedEvent;
                         command.Parameters[savedDateParameter].Value = utcNow;
                         command.Parameters[serialNumberParameter].Value = _nextSerialNumber;
@@ -137,7 +137,7 @@ namespace EventStore
                 var reader = command.ExecuteReader();
 
                 while (reader.Read())
-                    events.Add(new Event { AggregateId = aggregateId, SerializedEvent = GetBytes(reader) });
+                    events.Add(new Event { SerializedEvent = GetBytes(reader) });
             }
 
             return events.ToArray();

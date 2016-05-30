@@ -6,6 +6,7 @@ namespace EventStore
 {
     public class EventTransaction
     {
+        public Guid AggregateId { get; set; }
         public Event[] Events { get; set; }
 
         private SemaphoreSlim _semaphore = new SemaphoreSlim(0, 1);
