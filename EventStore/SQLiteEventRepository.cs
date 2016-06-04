@@ -123,22 +123,59 @@ namespace EventStore
 
         public Event[] GetEventsForAggregate(Guid aggregateId)
         {
-            var events = new List<Event>();
-
             using (var command = new SQLiteCommand(_connection))
             {
                 command.CommandText = string.Format("SELECT {0} FROM events WHERE {1} = {2} ORDER BY {3}",
-                    serializedEventField,
-                    aggregateIdField,
-                    aggregateIdParameter,
-                    serialNumberField);
+                                                    serializedEventField,
+                                                    aggregateIdField,
+                                                    aggregateIdParameter,
+                                                    serialNumberField);
                 command.Parameters.Add(new SQLiteParameter(aggregateIdParameter, aggregateId.ToString("D")));
-
-                var reader = command.ExecuteReader();
-
-                while (reader.Read())
-                    events.Add(new Event { SerializedEvent = GetBytes(reader) });
+                return GetEvents(command);
             }
+        }
+
+        public Event[] GetEventsForAggregate(Guid aggregateId, int largerThan)
+        {
+            using (var command = new SQLiteCommand(_connection))
+            {
+                command.CommandText = string.Format("SELECT {0} FROM events WHERE {1} = {2} AND {3} >= {4} ORDER BY {5}",
+                                                    serializedEventField,
+                                                    aggregateIdField,
+                                                    aggregateIdParameter,
+                                                    serialNumberField,
+                                                    serialNumberParameter,
+                                                    serialNumberField);
+                command.Parameters.Add(new SQLiteParameter(aggregateIdParameter, aggregateId.ToString("D")));
+                command.Parameters.Add(new SQLiteParameter(serialNumberParameter, largerThan));
+                return GetEvents(command);
+            }
+        }
+
+        public Event[] GetAllEvents(int @from, int to)
+        {
+            using (var command = new SQLiteCommand(_connection))
+            {
+                command.CommandText = string.Format("SELECT {0} FROM events WHERE {1} >= {2} AND {3} <= {4} ORDER BY {5}",
+                                                    serializedEventField,
+                                                    serialNumberField,
+                                                    "@from",
+                                                    serialNumberField,
+                                                    "@to",
+                                                    serialNumberField);
+                command.Parameters.Add(new SQLiteParameter("@from", @from));
+                command.Parameters.Add(new SQLiteParameter("@to", to));
+                return GetEvents(command);
+            }
+        }
+
+        private Event[] GetEvents(SQLiteCommand command)
+        {
+            var events = new List<Event>();
+            var reader = command.ExecuteReader();
+
+            while (reader.Read())
+                events.Add(new Event { SerializedEvent = GetBytes(reader) });
 
             return events.ToArray();
         }

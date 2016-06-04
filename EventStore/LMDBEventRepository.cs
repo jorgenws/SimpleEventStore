@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 
 namespace EventStore
 {
@@ -10,7 +11,7 @@ namespace EventStore
         private const string EventDb = "eventDb";
         private const string AggregateIndex = "aggregateIndex";
 
-        private LightningEnvironment _environment;
+        private readonly LightningEnvironment _environment;
 
         private int _nextSerialNumber;
 
@@ -93,6 +94,60 @@ namespace EventStore
                     KeyValuePair<byte[], byte[]> eventId = aggregateIndexCursor.GetCurrent();
                     events.Add(new Event { SerializedEvent = tx.Get(eventsDb, eventId.Value) });
                 } while (aggregateIndexCursor.MoveNextDuplicate());
+            }
+
+            return events.ToArray();
+        }
+
+        public Event[] GetEventsForAggregate(Guid aggregateId, int largerThan)
+        {
+            byte[] largerThanAsBytes = BitConverter.GetBytes(largerThan);
+
+            var events = new List<Event>();
+            using (var tx = _environment.BeginTransaction(TransactionBeginFlags.ReadOnly))
+            using (var eventsDb = tx.OpenDatabase(EventDb))
+            using (var aggregateIndex = tx.OpenDatabase(AggregateIndex))
+            {
+                var aggregateIndexCursor = tx.CreateCursor(aggregateIndex);
+
+                aggregateIndexCursor.MoveTo(aggregateId.ToByteArray());
+                aggregateIndexCursor.MoveToFirstDuplicate();
+
+                while (!aggregateIndexCursor.GetCurrent().Value.SequenceEqual(largerThanAsBytes))
+                    aggregateIndexCursor.MoveNextDuplicate();
+                
+                do
+                {
+                    KeyValuePair<byte[], byte[]> eventId = aggregateIndexCursor.GetCurrent();
+                    events.Add(new Event { SerializedEvent = tx.Get(eventsDb, eventId.Value) });
+                } while (aggregateIndexCursor.MoveNextDuplicate());
+            }
+
+            return events.ToArray();
+        }
+
+        public Event[] GetAllEvents(int @from, int to)
+        {
+            byte[] fromAsBytes = BitConverter.GetBytes(@from);
+            byte[] toAsBytes = BitConverter.GetBytes(@to);
+
+            var events = new List<Event>();
+            using (var tx = _environment.BeginTransaction(TransactionBeginFlags.ReadOnly))
+            using (var eventsDb = tx.OpenDatabase(EventDb))
+            {
+                var eventsCursor = tx.CreateCursor(eventsDb);
+                eventsCursor.MoveToAndGet(fromAsBytes);
+                events.Add(new Event {SerializedEvent = eventsCursor.Current.Value});
+
+                bool reachedTo = false;
+                while (!reachedTo && eventsCursor.MoveNext())
+                {
+                    var current = eventsCursor.GetCurrent();
+                    if (current.Key.SequenceEqual(toAsBytes))
+                        reachedTo = true;
+
+                    events.Add(new Event {SerializedEvent = current.Value});
+                }
             }
 
             return events.ToArray();

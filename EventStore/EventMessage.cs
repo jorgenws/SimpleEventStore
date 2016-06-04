@@ -9,7 +9,7 @@ namespace EventStore
         public Guid AggregateId { get; set; }
         public Event[] Events { get; set; }
 
-        private SemaphoreSlim _semaphore = new SemaphoreSlim(0, 1);
+        private readonly SemaphoreSlim _semaphore = new SemaphoreSlim(0, 1);
 
         public async Task WaitAsync()
         {
