@@ -1,10 +1,11 @@
-﻿using SimpleEventStore;
+﻿using System;
+using SimpleEventStore;
 using NUnit.Framework;
 
 namespace EventStoreTests
 {
     [TestFixture]
-    public class EventStoreBuilderTest
+    public class EventStoreBuilderTests
     {
         [Test]
         public void BuildSqliteEventStore()
@@ -30,6 +31,13 @@ namespace EventStoreTests
                                                   .Build());
 
             Assert.NotNull(es);
+        }
+
+        [Test]
+        public void BuildingWithMissingDataThrowsException()
+        {
+            EventStoreBuilder builder = new EventStoreBuilder();
+            Assert.Throws<Exception>(() => builder.Build());
         }
     }
 }

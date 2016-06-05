@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace SimpleEventStore
 {
-    public class EventStore
+    public class EventStore : IDisposable
     {
         private readonly BlockingCollection<EventTransaction> _writerQueue;
         private readonly IEventRepository _eventRepository;
@@ -19,9 +19,8 @@ namespace SimpleEventStore
             _writerQueue = new BlockingCollection<EventTransaction>(BufferSize);
             
             //ToDo: Look into using continuation to catch that the task died and recreate it if possible.
-            //ToDo: Add cancelation
             _writerRunner = Task.Factory.StartNew(() => new EventConsumer(_writerQueue, repository).Consume(),
-                                                        TaskCreationOptions.LongRunning);
+                                                  TaskCreationOptions.LongRunning);
         }
 
         public async Task Process(EventTransaction eventTransaction)
@@ -43,6 +42,12 @@ namespace SimpleEventStore
         public IEnumerable<Event> GetAllEvents(int from, int to)
         {
             return _eventRepository.GetAllEvents(from, to);
-        } 
+        }
+
+        public void Dispose()
+        {
+            _writerQueue.CompleteAdding();
+            _writerRunner.Wait();
+        }
     }
 }
