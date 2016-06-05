@@ -110,12 +110,13 @@ namespace EventStore
             {
                 var aggregateIndexCursor = tx.CreateCursor(aggregateIndex);
 
-                aggregateIndexCursor.MoveTo(aggregateId.ToByteArray());
-                aggregateIndexCursor.MoveToFirstDuplicate();
+                aggregateIndexCursor.MoveToFirstValueAfter(aggregateId.ToByteArray(), largerThanAsBytes);
 
-                while (!aggregateIndexCursor.GetCurrent().Value.SequenceEqual(largerThanAsBytes))
+                //MoveToFistValueAfter stops at the first matching or greater.
+                //Need to check if we are at a match or at a item that is greater the the serial number
+                if (aggregateIndexCursor.GetCurrent().Value.SequenceEqual(largerThanAsBytes))
                     aggregateIndexCursor.MoveNextDuplicate();
-                
+              
                 do
                 {
                     KeyValuePair<byte[], byte[]> eventId = aggregateIndexCursor.GetCurrent();

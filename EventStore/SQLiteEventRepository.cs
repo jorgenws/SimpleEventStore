@@ -139,7 +139,7 @@ namespace EventStore
         {
             using (var command = new SQLiteCommand(_connection))
             {
-                command.CommandText = string.Format("SELECT {0} FROM events WHERE {1} = {2} AND {3} >= {4} ORDER BY {5}",
+                command.CommandText = string.Format("SELECT {0} FROM events WHERE {1} = {2} AND {3} > {4} ORDER BY {5}",
                                                     serializedEventField,
                                                     aggregateIdField,
                                                     aggregateIdParameter,
