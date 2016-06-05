@@ -8,17 +8,21 @@ namespace SimpleEventStore
     {
         private readonly BlockingCollection<EventTransaction> _writerQueue;
         private readonly IEventRepository _repository;
+        private readonly IEventPublisher _publisher;
         private const uint MaxBatchSize = 1000;
 
-        public EventConsumer(BlockingCollection<EventTransaction> writerQueue, IEventRepository repository)
+        public EventConsumer(BlockingCollection<EventTransaction> writerQueue,
+                             IEventRepository repository,
+                             IEventPublisher publisher)
         {
             _repository = repository;
+            _publisher = publisher;
             _writerQueue = writerQueue;
         }
 
         public void Consume()
         {
-            List<EventTransaction> messageBatch = new List<EventTransaction>();
+            List<EventTransaction> transactionBatch = new List<EventTransaction>();
             while (!_writerQueue.IsCompleted)
             {
                 EventTransaction message;
@@ -34,19 +38,48 @@ namespace SimpleEventStore
                     break;
                 }
 
-                messageBatch.Add(message);
+                transactionBatch.Add(message);
 
-                while (messageBatch.Count <= MaxBatchSize && _writerQueue.TryTake(out message))
-                    messageBatch.Add(message);
+                while (transactionBatch.Count <= MaxBatchSize && _writerQueue.TryTake(out message))
+                    transactionBatch.Add(message);
 
-                //TOdo: publish to external queues
-                if (_repository.WriteEvents(messageBatch))
-                    foreach (var transaction in messageBatch)
-                        transaction.HasFinished();
+                bool writeSuccess = false;
+                bool publishSuccess = false;
+                writeSuccess = TryWrite(transactionBatch);
+                if (writeSuccess)
+                    publishSuccess = TryPublish(transactionBatch);
 
-                //Todo: Handle write errors
-
+                if (writeSuccess)
+                    foreach (var transaction in transactionBatch)
+                        transaction.Finished(writeSuccess, publishSuccess);
             }
+        }
+
+        private bool TryWrite(List<EventTransaction> transactionBatch)
+        {
+            bool success = false;
+            int retriesLeft = 5;
+
+            while (!success && retriesLeft > 0)
+            {
+                success = _repository.WriteEvents(transactionBatch);
+                retriesLeft--;
+            }
+
+            return success;
+        }
+
+        private bool TryPublish(List<EventTransaction> transactionBatch)
+        {
+            bool success = false;
+            int retriesLeft = 5;
+            while (!success && retriesLeft > 0)
+            {
+                success = _publisher.Publish(transactionBatch);
+                retriesLeft--;
+            }
+
+            return success;
         }
     }
 }

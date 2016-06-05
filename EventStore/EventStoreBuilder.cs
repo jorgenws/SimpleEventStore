@@ -2,11 +2,13 @@
 
 namespace SimpleEventStore
 {
-    public class EventStoreBuilder : IEventStoreBuilder, ILMDBRepositoryBuilder, ISQLiteRepositoryBuilder, IEventRepositoryBuild
+    public class EventStoreBuilder : IEventStoreBuilder, ILMDBRepositoryBuilder, ISQLiteRepositoryBuilder, IEventPublisherBuilder, IEventRepositoryBuild
     {
         private RepositoryType _selectedRepo;
         private SQLiteRepositoryConfiguration _sqliteRepoConfig;
         private LMDBRepositoryConfiguration _lmdbRepoConfig;
+
+        private PublisherType _selectedPublisher;
 
         public ILMDBRepositoryBuilder UseLMDBRepository()
         {
@@ -20,30 +22,42 @@ namespace SimpleEventStore
             return this;
         }
 
-        public IEventRepositoryBuild Configuration(string connectionString)
+        public IEventPublisherBuilder Configuration(string connectionString)
         {
             _sqliteRepoConfig = new SQLiteRepositoryConfiguration(connectionString);
             return this;
         }
 
-        public IEventRepositoryBuild Configuration(string environmentPath, int maxDatabases, long mapSize)
+        public IEventPublisherBuilder Configuration(string environmentPath, int maxDatabases, long mapSize)
         {
             _lmdbRepoConfig = new LMDBRepositoryConfiguration(environmentPath, maxDatabases, mapSize);
             return this;
         }
 
+        public IEventRepositoryBuild UseRabbitMQ()
+        {
+            _selectedPublisher = PublisherType.RabbitMQ;
+            return this;
+        }
+
         public EventStore Build()
         {
-            EventStore es;
+            IEventRepository eventRepository = null;
+            IEventPublisher eventPublisher = null;
 
             if (_selectedRepo == RepositoryType.LMDB && _lmdbRepoConfig != null)
-                es = new EventStore(new LMDBEventRepository(_lmdbRepoConfig));
+                eventRepository = new LMDBEventRepository(_lmdbRepoConfig);
             else if (_selectedRepo == RepositoryType.SQLite && _sqliteRepoConfig != null)
-                es = new EventStore(new SQLiteEventRepository(_sqliteRepoConfig));
+                eventRepository = new SQLiteEventRepository(_sqliteRepoConfig);
             else
-                throw new Exception("Not a valid combination");
+                throw new Exception("Missing data to build event repository");
 
-            return es;
+            if (_selectedPublisher == PublisherType.RabbitMQ)
+                eventPublisher = new RabbitMQEventPublisher();
+            else
+                throw new Exception("Missing data to build event publisher");
+
+            return new EventStore(eventRepository, eventPublisher);
         }
 
         public void Clear()
@@ -59,6 +73,12 @@ namespace SimpleEventStore
             LMDB,
             SQLite
         }
+
+        private enum PublisherType
+        {
+            NotSelected,
+            RabbitMQ
+        }
     }
 
     public interface IEventStoreBuilder
@@ -70,12 +90,17 @@ namespace SimpleEventStore
 
     public interface ILMDBRepositoryBuilder
     {
-        IEventRepositoryBuild Configuration(string environmentPath, int maxDatabases, long mapSize);
+        IEventPublisherBuilder Configuration(string environmentPath, int maxDatabases, long mapSize);
     }
 
     public interface ISQLiteRepositoryBuilder
     {
-        IEventRepositoryBuild Configuration(string connectionString);
+        IEventPublisherBuilder Configuration(string connectionString);
+    }
+
+    public interface IEventPublisherBuilder
+    {
+        IEventRepositoryBuild UseRabbitMQ();
     }
 
     public interface IEventRepositoryBuild
