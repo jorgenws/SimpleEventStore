@@ -1,4 +1,4 @@
-﻿using EventStore;
+﻿using SimpleEventStore;
 using NUnit.Framework;
 using System;
 using System.Collections.Generic;

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace EventStore
+namespace SimpleEventStore
 {
     public class EventStoreBuilder : IEventStoreBuilder, ILMDBRepositoryBuilder, ISQLiteRepositoryBuilder, IEventRepositoryBuild
     {
@@ -34,12 +34,16 @@ namespace EventStore
 
         public EventStore Build()
         {
-            if (_selectedRepo == RepositoryType.LMDB && _lmdbRepoConfig != null)
-                return new EventStore(new LMDBEventRepository(_lmdbRepoConfig));
-            if (_selectedRepo == RepositoryType.SQLite && _sqliteRepoConfig != null)
-                return new EventStore(new SQLiteEventRepository(_sqliteRepoConfig));
+            EventStore es;
 
-            throw new Exception("Not a valid combination");
+            if (_selectedRepo == RepositoryType.LMDB && _lmdbRepoConfig != null)
+                es = new EventStore(new LMDBEventRepository(_lmdbRepoConfig));
+            else if (_selectedRepo == RepositoryType.SQLite && _sqliteRepoConfig != null)
+                es = new EventStore(new SQLiteEventRepository(_sqliteRepoConfig));
+            else
+                throw new Exception("Not a valid combination");
+
+            return es;
         }
 
         public void Clear()

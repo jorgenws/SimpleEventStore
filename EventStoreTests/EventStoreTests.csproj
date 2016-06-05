@@ -70,6 +70,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EventStoreBuilderTest.cs" />
     <Compile Include="LMDBEventRepositoryTests.cs" />
     <Compile Include="SQLiteEventRepositoryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

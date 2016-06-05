@@ -1,4 +1,4 @@
-﻿namespace EventStore
+﻿namespace SimpleEventStore
 {
     public class SQLiteRepositoryConfiguration
     {

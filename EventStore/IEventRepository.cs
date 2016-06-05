@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace EventStore
+namespace SimpleEventStore
 {
     public interface IEventRepository
     {

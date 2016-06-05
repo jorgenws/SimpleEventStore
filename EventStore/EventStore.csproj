@@ -7,8 +7,8 @@
     <ProjectGuid>{D8E8BD25-E0FC-436B-BD9A-E35040D16B87}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>EventStore</RootNamespace>
-    <AssemblyName>EventStore</AssemblyName>
+    <RootNamespace>SimpleEventStore</RootNamespace>
+    <AssemblyName>SimpleEventStore</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <NuGetPackageImportStamp>
