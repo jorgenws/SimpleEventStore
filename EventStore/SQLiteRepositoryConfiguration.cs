@@ -1,6 +1,6 @@
 ﻿namespace SimpleEventStore
 {
-    public class SQLiteRepositoryConfiguration
+    internal class SQLiteRepositoryConfiguration
     {
         public string ConnectionString { get; private set; }
 

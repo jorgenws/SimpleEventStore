@@ -1,12 +1,11 @@
 ﻿using LightningDB;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 
 namespace SimpleEventStore
 {
-    public class LMDBEventRepository : IEventRepository, IDisposable
+    internal class LMDBEventRepository : IEventRepository, IDisposable
     {
         private const string EventDb = "eventDb";
         private const string AggregateIndex = "aggregateIndex";

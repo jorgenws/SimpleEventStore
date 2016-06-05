@@ -1,6 +1,6 @@
 ﻿namespace SimpleEventStore
 {
-    public class LMDBRepositoryConfiguration
+    internal class LMDBRepositoryConfiguration
     {
         public int MaxDatabases { get; private set; }
         public long MapSize { get; private set; }

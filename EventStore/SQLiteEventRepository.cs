@@ -6,7 +6,7 @@ using System.IO;
 
 namespace SimpleEventStore
 {
-    public class SQLiteEventRepository : IEventRepository
+    internal class SQLiteEventRepository : IEventRepository, IDisposable
     {
         private const string aggregateIdField = "AggregateId";
         private const string aggregateIdParameter = "@aggregateId";
@@ -195,6 +195,12 @@ namespace SimpleEventStore
                 }
                 return stream.ToArray();
             }
+        }
+
+        public void Dispose()
+        {
+            _insertCommand.Dispose();
+            _connection.Dispose();
         }
     }
 }
