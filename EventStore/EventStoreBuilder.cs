@@ -2,13 +2,14 @@
 
 namespace SimpleEventStore
 {
-    public class EventStoreBuilder : IEventStoreBuilder, ILMDBRepositoryBuilder, ISQLiteRepositoryBuilder, IEventPublisherBuilder, IEventRepositoryBuild
+    public class EventStoreBuilder : IEventStoreBuilder, ILMDBRepositoryBuilder, ISQLiteRepositoryBuilder, IEventPublisherBuilder, IRabbitMqConfigurationBuilder, IEventRepositoryBuild
     {
         private RepositoryType _selectedRepo;
         private SQLiteRepositoryConfiguration _sqliteRepoConfig;
         private LMDBRepositoryConfiguration _lmdbRepoConfig;
-
+        
         private PublisherType _selectedPublisher;
+        private RabbitMQConfiguration _rabbitMQConfiguration;
 
         public ILMDBRepositoryBuilder UseLMDBRepository()
         {
@@ -34,9 +35,15 @@ namespace SimpleEventStore
             return this;
         }
 
-        public IEventRepositoryBuild UseRabbitMQ()
+        public IRabbitMqConfigurationBuilder UseRabbitMQ()
         {
             _selectedPublisher = PublisherType.RabbitMQ;
+            return this;
+        }
+
+        public IEventRepositoryBuild Configuration(string hostName, string exchangeName, IBinarySerializer serializer)
+        {
+            _rabbitMQConfiguration = new RabbitMQConfiguration(hostName, exchangeName, serializer);
             return this;
         }
 
@@ -52,8 +59,8 @@ namespace SimpleEventStore
             else
                 throw new Exception("Missing data to build event repository");
 
-            if (_selectedPublisher == PublisherType.RabbitMQ)
-                eventPublisher = new RabbitMQEventPublisher();
+            if (_selectedPublisher == PublisherType.RabbitMQ && _rabbitMQConfiguration != null)
+                eventPublisher = new RabbitMQEventPublisher(_rabbitMQConfiguration);
             else
                 throw new Exception("Missing data to build event publisher");
 
@@ -100,7 +107,12 @@ namespace SimpleEventStore
 
     public interface IEventPublisherBuilder
     {
-        IEventRepositoryBuild UseRabbitMQ();
+        IRabbitMqConfigurationBuilder UseRabbitMQ();
+    }
+
+    public interface IRabbitMqConfigurationBuilder
+    {
+        IEventRepositoryBuild Configuration(string hostName, string exchangeName, IBinarySerializer serializer);
     }
 
     public interface IEventRepositoryBuild
