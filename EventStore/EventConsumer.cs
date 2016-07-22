@@ -53,6 +53,9 @@ namespace SimpleEventStore
                     foreach (var transaction in transactionBatch)
                         transaction.Finished(writeSuccess, publishSuccess);
             }
+
+            _writerQueue.Dispose();
+            //_publisher.Dispose();
         }
 
         private bool TryWrite(List<EventTransaction> transactionBatch)

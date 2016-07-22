@@ -1,6 +1,7 @@
 ﻿using System;
 using SimpleEventStore;
 using NUnit.Framework;
+using System.IO;
 
 namespace EventStoreTests
 {
@@ -33,6 +34,9 @@ namespace EventStoreTests
                                                   .Build());
 
             Assert.NotNull(es);
+
+            //Clean up database
+            es.Dispose();
         }
 
         [Test]
@@ -40,6 +44,23 @@ namespace EventStoreTests
         {
             EventStoreBuilder builder = new EventStoreBuilder();
             Assert.Throws<Exception>(() => builder.Build());
+        }
+
+        [TearDown]
+        public void TearDown()
+        {
+            //Added to clean up after BuildLMDBEventStore
+
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+
+            var datafile = Path.Combine(@"c:\lmdb", "data.mdb");
+            if (File.Exists(datafile))
+                File.Delete(datafile);
+
+            var lockfile = Path.Combine(@"c:\lmdb", "lock.mdb");
+            if (File.Exists(lockfile))
+                File.Delete(lockfile);
         }
     }
 }
