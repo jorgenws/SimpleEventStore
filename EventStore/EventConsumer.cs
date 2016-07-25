@@ -55,7 +55,6 @@ namespace SimpleEventStore
             }
 
             _writerQueue.Dispose();
-            //_publisher.Dispose();
         }
 
         private bool TryWrite(List<EventTransaction> transactionBatch)

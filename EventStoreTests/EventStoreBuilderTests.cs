@@ -17,7 +17,7 @@ namespace EventStoreTests
             Assert.DoesNotThrow(() => es = builder.UseSQLiteRepository()
                                                   .Configuration("Data Source =:memory:")
                                                   .UseRabbitMQ()
-                                                  .Configuration("localhost", "testExchange", null)
+                                                  .Configuration("localhost", "testExchange", new ProtobufPublishedEventsSerializer())
                                                   .Build());
 
             Assert.NotNull(es);
@@ -32,7 +32,7 @@ namespace EventStoreTests
             Assert.DoesNotThrow(() => es = builder.UseLMDBRepository()
                                                   .Configuration(@"c:\lmdb", 2, 10485760)
                                                   .UseRabbitMQ()
-                                                  .Configuration("localhost", "testExchange", null)
+                                                  .Configuration("localhost", "testExchange", new ProtobufPublishedEventsSerializer())
                                                   .Build());
 
             Assert.NotNull(es);

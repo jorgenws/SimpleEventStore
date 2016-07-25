@@ -1,6 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using RabbitMQ.Client;
-using System;
 
 namespace SimpleEventStore
 {
@@ -14,7 +15,7 @@ namespace SimpleEventStore
         readonly RabbitMQConfiguration _configuration;
         readonly IConnectionFactory _connectionFactory;
 
-        IBinarySerializer Serializer { get { return _configuration.BinarySerializer; } }
+        IBinaryPublishedEventsSerializer Serializer { get { return _configuration.BinarySerializer; } }
         
         public RabbitMQEventPublisher(RabbitMQConfiguration configuration)
         {
@@ -32,7 +33,15 @@ namespace SimpleEventStore
                 {
                     foreach (var transaction in eventTransactions)
                     {
-                        byte[] message = Serializer.Serialize(transaction);
+                        var publishedEvents = new PublishedEvents();
+                        publishedEvents.Events = transaction.Events.Select(c => new PublishedEvent
+                        {
+                            AggregateId = transaction.AggregateId,
+                            SerialNumber = 0,
+                            Event = c.SerializedEvent
+                        }).ToList();
+                        
+                        byte[] message = Serializer.Serialize(publishedEvents);
                         channel.BasicPublish(exchange: _configuration.ExchangeName,
                                              routingKey: "",
                                              basicProperties: null,
@@ -40,7 +49,7 @@ namespace SimpleEventStore
                     }
                 }
             }
-            catch(Exception e)
+            catch(Exception)
             {
                 return false;
             }
@@ -60,18 +69,13 @@ namespace SimpleEventStore
     {
         internal string HostName { get; private set; }
         internal string ExchangeName { get; private set; }
-        internal IBinarySerializer BinarySerializer { get; private set; }
+        internal IBinaryPublishedEventsSerializer BinarySerializer { get; private set; }
 
-        public RabbitMQConfiguration(string hostName, string exchangeName, IBinarySerializer serializer)
+        public RabbitMQConfiguration(string hostName, string exchangeName, IBinaryPublishedEventsSerializer serializer)
         {
             HostName = hostName;
             ExchangeName = exchangeName;
             BinarySerializer = serializer;
         }
-    }
-
-    public interface IBinarySerializer
-    {
-        byte[] Serialize(EventTransaction transaction);
     }
 }
