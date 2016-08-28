@@ -2,7 +2,6 @@
 using SimpleEventStore;
 using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -19,7 +18,7 @@ namespace EventStoreTests.PerformenceTesting
 
             IEventStoreBuilder builder = new EventStoreBuilder();
             var eventStore = builder.UseSQLiteRepository()
-                                    .Configuration(@"data source=c:\Temp\events.db;Version=3;Mode=WAL")
+                                    .Configuration(@"data source=d:\events.db;Version=3;Mode=WAL")
                                     .UseDummyPublisher()
                                     .Build();
 
@@ -40,7 +39,7 @@ namespace EventStoreTests.PerformenceTesting
                 }));
             }
 
-            Task.WhenAll(tasks.ToArray());
+            Task.WhenAll(tasks.ToArray()).Wait();
 
             var after = DateTime.Now;
 
