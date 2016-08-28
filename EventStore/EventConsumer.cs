@@ -25,6 +25,7 @@ namespace SimpleEventStore
             List<EventTransaction> transactionBatch = new List<EventTransaction>();
             while (!_writerQueue.IsCompleted)
             {
+                transactionBatch.Clear();
                 EventTransaction message;
 
                 try
@@ -49,9 +50,8 @@ namespace SimpleEventStore
                 if (writeSuccess)
                     publishSuccess = TryPublish(transactionBatch);
 
-                if (writeSuccess)
-                    foreach (var transaction in transactionBatch)
-                        transaction.Finished(writeSuccess, publishSuccess);
+                foreach (var transaction in transactionBatch)
+                    transaction.Finished(writeSuccess, publishSuccess);
             }
 
             _writerQueue.Dispose();

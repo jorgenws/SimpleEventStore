@@ -10,6 +10,14 @@ namespace SimpleEventStore
         bool Publish(List<EventTransaction> eventTransactions);
     }
 
+    public class DummyEventPublisher : IEventPublisher
+    {
+        public bool Publish(List<EventTransaction> eventTransactions)
+        {
+            return true;
+        }
+    }
+
     internal class RabbitMQEventPublisher : IEventPublisher
     {
         readonly RabbitMQConfiguration _configuration;

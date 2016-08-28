@@ -41,6 +41,12 @@ namespace SimpleEventStore
             return this;
         }
 
+        public IEventRepositoryBuild UseDummyPublisher()
+        {
+            _selectedPublisher = PublisherType.Dummy;
+            return this;
+        }
+
         public IEventRepositoryBuild Configuration(string hostName, string exchangeName, IBinaryPublishedEventsSerializer serializer)
         {
             _rabbitMQConfiguration = new RabbitMQConfiguration(hostName, exchangeName, serializer);
@@ -61,6 +67,8 @@ namespace SimpleEventStore
 
             if (_selectedPublisher == PublisherType.RabbitMQ && _rabbitMQConfiguration != null)
                 eventPublisher = new RabbitMQEventPublisher(_rabbitMQConfiguration);
+            else if (_selectedPublisher == PublisherType.Dummy)
+                eventPublisher = new DummyEventPublisher();
             else
                 throw new Exception("Missing data to build event publisher");
 
@@ -84,7 +92,8 @@ namespace SimpleEventStore
         private enum PublisherType
         {
             NotSelected,
-            RabbitMQ
+            RabbitMQ,
+            Dummy
         }
     }
 
@@ -108,6 +117,7 @@ namespace SimpleEventStore
     public interface IEventPublisherBuilder
     {
         IRabbitMqConfigurationBuilder UseRabbitMQ();
+        IEventRepositoryBuild UseDummyPublisher();
     }
 
     public interface IRabbitMqConfigurationBuilder

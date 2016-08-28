@@ -25,7 +25,13 @@ namespace SimpleEventStore
             IsFinished = true;
             IsWriteSuccess = writeSuccess;
             IsPublishSuccess = publishSuccess;
-            _semaphore.Release();
+            try
+            {
+                _semaphore.Release();
+            }catch(Exception e)
+            {
+                throw e;
+            }
         }
     }
 }
