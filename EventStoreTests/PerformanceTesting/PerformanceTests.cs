@@ -11,14 +11,14 @@ namespace EventStoreTests.PerformenceTesting
     public class PerformanceTests
     {
         [Test]
-        [Ignore("Performance test")]
+        //[Ignore("Performance test")]
         public void SaveHundredThousendEventsWithSqliteAndDummyPublisher()
         {
             int numberOfEvents = 100000;
 
             IEventStoreBuilder builder = new EventStoreBuilder();
             var eventStore = builder.UseSQLiteRepository()
-                                    .Configuration(@"data source=d:\events.db;Version=3;Mode=WAL")
+                                    .Configuration(@"data source=c:\temp\events.db;journal_mode=WAL;")
                                     .UseDummyPublisher()
                                     .Build();
 
