@@ -11,7 +11,7 @@ namespace EventStoreTests.PerformenceTesting
     public class PerformanceTests
     {
         [Test]
-        //[Ignore("Performance test")]
+        [Ignore("Performance test")]
         public void SaveHundredThousendEventsWithSqliteAndDummyPublisher()
         {
             int numberOfEvents = 100000;
