@@ -57,9 +57,16 @@ namespace EventStoreTests.PerformenceTesting
         {
             int numberOfEvents = 1000000;
 
+            //For some reason, the values higher than 500 MB does not work.
+
+            //TB = 1099511627776 
+            //GB = 1073741824
+            //500MB = 524288000
+            //100MB = 104857600
+
             IEventStoreBuilder builder = new EventStoreBuilder();
             var eventStore = builder.UseLMDBRepository()
-                                    .Configuration(@"c:\temp\events.db", 2, 104857600)
+                                    .Configuration(@"c:\temp\events.db", 2, 524288000)
                                     .UseDummyPublisher()
                                     .Build();
 

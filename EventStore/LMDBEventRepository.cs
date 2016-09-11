@@ -18,7 +18,6 @@ namespace SimpleEventStore
         {
             _environment = new LightningEnvironment(configuration.EnvironmentPath);
             _environment.MaxDatabases = configuration.MaxDatabases;
-            //Fixed size on Windows. As in preallocated.
             _environment.MapSize = configuration.MapSize;
             _environment.Open();
 

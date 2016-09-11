@@ -32,7 +32,7 @@ namespace EventStoreTests
 
             EventStore es = null;
             Assert.DoesNotThrow(() => es = builder.UseLMDBRepository()
-                                                  .Configuration(@"c:\temp", 2, 10485760)
+                                                  .Configuration(@"c:\lmdb", 2, 10485760)
                                                   .UseDummyPublisher()
                                                   .Build());
 
@@ -57,11 +57,11 @@ namespace EventStoreTests
             GC.Collect();
             GC.WaitForPendingFinalizers();
 
-            var datafile = Path.Combine(@"c:\temp", "data.mdb");
+            var datafile = Path.Combine(@"c:\lmdb", "data.mdb");
             if (File.Exists(datafile))
                 File.Delete(datafile);
 
-            var lockfile = Path.Combine(@"c:\temp", "lock.mdb");
+            var lockfile = Path.Combine(@"c:\lmdb", "lock.mdb");
             if (File.Exists(lockfile))
                 File.Delete(lockfile);
         }

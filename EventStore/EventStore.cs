@@ -30,7 +30,9 @@ namespace SimpleEventStore
         {
             var tcs = new TaskCompletionSource<bool>();
             var transactionTask = new TransactionTask(eventTransaction, tcs);
+
             _writerQueue.Add(transactionTask);
+
             return tcs.Task;
         }
 

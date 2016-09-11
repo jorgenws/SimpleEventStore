@@ -9,7 +9,7 @@ namespace SimpleEventStore
         private readonly BlockingCollection<TransactionTask> _writerQueue;
         private readonly IEventRepository _repository;
         private readonly IEventPublisher _publisher;
-        private const uint MaxBatchSize = 10000;
+        private const uint MaxBatchSize = 100000;
 
         public EventConsumer(BlockingCollection<TransactionTask> writerQueue,
                              IEventRepository repository,
