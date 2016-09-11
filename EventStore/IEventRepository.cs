@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SimpleEventStore
 {
-    public interface IEventRepository
+    public interface IEventRepository : IDisposable
     {
         bool WriteEvents(List<EventTransaction> eventTransaction);
         Event[] GetEventsForAggregate(Guid aggregateId);

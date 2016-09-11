@@ -7,7 +7,7 @@ namespace SimpleEventStore
 {
     public class EventStore : IDisposable
     {
-        private readonly BlockingCollection<EventTransaction> _writerQueue;
+        private readonly BlockingCollection<TransactionTask> _writerQueue;
         private readonly IEventRepository _eventRepository;
         private readonly IEventPublisher _publisher;
         private Task _writerRunner;
@@ -15,22 +15,23 @@ namespace SimpleEventStore
         private const int BufferSize = 100000;
 
         public EventStore(IEventRepository repository,
-            IEventPublisher publisher)
+                          IEventPublisher publisher)
         {
             _eventRepository = repository;
             _publisher = publisher;
-            _writerQueue = new BlockingCollection<EventTransaction>(BufferSize);
+            _writerQueue = new BlockingCollection<TransactionTask>(BufferSize);
             
             //ToDo: Look into using continuation to catch that the task died and recreate it if possible.
-            _writerRunner =
-                Task.Factory.StartNew(() => new EventConsumer(_writerQueue, repository, _publisher).Consume(),
+            _writerRunner = Task.Factory.StartNew(() => new EventConsumer(_writerQueue, repository, _publisher).Consume(),
                                       TaskCreationOptions.LongRunning);
         }
 
-        public async Task Process(EventTransaction eventTransaction)
+        public Task<bool> Process(EventTransaction eventTransaction)
         {
-            _writerQueue.Add(eventTransaction);
-            await eventTransaction.WaitAsync();
+            var tcs = new TaskCompletionSource<bool>();
+            var transactionTask = new TransactionTask(eventTransaction, tcs);
+            _writerQueue.Add(transactionTask);
+            return tcs.Task;
         }
 
         public IEnumerable<Event> GetEventsForAggregate(Guid aggregateId)

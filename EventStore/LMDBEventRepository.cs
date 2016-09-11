@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace SimpleEventStore
 {
-    internal class LMDBEventRepository : IEventRepository, IDisposable
+    internal class LMDBEventRepository : IEventRepository
     {
         private const string EventDb = "eventDb";
         private const string AggregateIndex = "aggregateIndex";

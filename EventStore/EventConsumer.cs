@@ -6,12 +6,12 @@ namespace SimpleEventStore
 {
     internal class EventConsumer
     {
-        private readonly BlockingCollection<EventTransaction> _writerQueue;
+        private readonly BlockingCollection<TransactionTask> _writerQueue;
         private readonly IEventRepository _repository;
         private readonly IEventPublisher _publisher;
-        private const uint MaxBatchSize = 1000;
+        private const uint MaxBatchSize = 10000;
 
-        public EventConsumer(BlockingCollection<EventTransaction> writerQueue,
+        public EventConsumer(BlockingCollection<TransactionTask> writerQueue,
                              IEventRepository repository,
                              IEventPublisher publisher)
         {
@@ -22,11 +22,11 @@ namespace SimpleEventStore
 
         public void Consume()
         {
-            List<EventTransaction> transactionBatch = new List<EventTransaction>();
+            List<TransactionTask> transactionBatch = new List<TransactionTask>();
             while (!_writerQueue.IsCompleted)
             {
                 transactionBatch.Clear();
-                EventTransaction message;
+                TransactionTask message;
 
                 try
                 {
@@ -44,40 +44,65 @@ namespace SimpleEventStore
                 while (transactionBatch.Count <= MaxBatchSize && _writerQueue.TryTake(out message))
                     transactionBatch.Add(message);
 
-                bool writeSuccess = false;
-                bool publishSuccess = false;
-                writeSuccess = TryWrite(transactionBatch);
-                if (writeSuccess)
-                    publishSuccess = TryPublish(transactionBatch);
-
-                foreach (var transaction in transactionBatch)
-                    transaction.Finished(writeSuccess, publishSuccess);
+                Handle(transactionBatch);
             }
 
+            _repository.Dispose();
             _writerQueue.Dispose();
         }
 
-        private bool TryWrite(List<EventTransaction> transactionBatch)
+        private void Handle(List<TransactionTask> transactionBatch)
+        {
+            bool writeSuccess = TryWrite(transactionBatch);
+            if (writeSuccess)
+            {
+                foreach (var transaction in transactionBatch)
+                    transaction.IsWritten = true;
+
+                bool publishSuccess = TryPublish(transactionBatch);
+            }
+            else
+            {
+                foreach (var transaction in transactionBatch)
+                {
+                    transaction.IsWritten = false;
+                }
+            }
+
+            foreach (var transaction in transactionBatch)
+                transaction.Finish();
+        }
+
+        private bool TryWrite(List<TransactionTask> transactionBatch)
         {
             bool success = false;
             int retriesLeft = 5;
 
+            var eventTransactions = new List<EventTransaction>();
+            foreach (var eventTransaction in transactionBatch)
+                eventTransactions.Add(eventTransaction.Transaction);
+
             while (!success && retriesLeft > 0)
             {
-                success = _repository.WriteEvents(transactionBatch);
+                success = _repository.WriteEvents(eventTransactions);
                 retriesLeft--;
             }
 
             return success;
         }
 
-        private bool TryPublish(List<EventTransaction> transactionBatch)
+        private bool TryPublish(List<TransactionTask> transactionBatch)
         {
             bool success = false;
             int retriesLeft = 5;
+
+            var eventTransactions = new List<EventTransaction>();
+            foreach (var eventTransaction in transactionBatch)
+                eventTransactions.Add(eventTransaction.Transaction);
+
             while (!success && retriesLeft > 0)
             {
-                success = _publisher.Publish(transactionBatch);
+                success = _publisher.Publish(eventTransactions);
                 retriesLeft--;
             }
 

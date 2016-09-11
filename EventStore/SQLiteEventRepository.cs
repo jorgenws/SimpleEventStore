@@ -6,7 +6,7 @@ using System.IO;
 
 namespace SimpleEventStore
 {
-    internal class SQLiteEventRepository : IEventRepository, IDisposable
+    internal class SQLiteEventRepository : IEventRepository
     {
         private const string aggregateIdField = "AggregateId";
         private const string aggregateIdParameter = "@aggregateId";

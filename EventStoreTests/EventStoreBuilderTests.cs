@@ -16,11 +16,13 @@ namespace EventStoreTests
             EventStore es = null;
             Assert.DoesNotThrow(() => es = builder.UseSQLiteRepository()
                                                   .Configuration("Data Source =:memory:")
-                                                  .UseRabbitMQ()
-                                                  .Configuration("localhost", "testExchange", new ProtobufPublishedEventsSerializer())
+                                                  .UseDummyPublisher()
                                                   .Build());
 
             Assert.NotNull(es);
+            
+            //Clean up database
+            es.Dispose();
         }
 
         [Test]
@@ -30,9 +32,8 @@ namespace EventStoreTests
 
             EventStore es = null;
             Assert.DoesNotThrow(() => es = builder.UseLMDBRepository()
-                                                  .Configuration(@"c:\lmdb", 2, 10485760)
-                                                  .UseRabbitMQ()
-                                                  .Configuration("localhost", "testExchange", new ProtobufPublishedEventsSerializer())
+                                                  .Configuration(@"c:\temp", 2, 10485760)
+                                                  .UseDummyPublisher()
                                                   .Build());
 
             Assert.NotNull(es);
@@ -56,11 +57,11 @@ namespace EventStoreTests
             GC.Collect();
             GC.WaitForPendingFinalizers();
 
-            var datafile = Path.Combine(@"c:\lmdb", "data.mdb");
+            var datafile = Path.Combine(@"c:\temp", "data.mdb");
             if (File.Exists(datafile))
                 File.Delete(datafile);
 
-            var lockfile = Path.Combine(@"c:\lmdb", "lock.mdb");
+            var lockfile = Path.Combine(@"c:\temp", "lock.mdb");
             if (File.Exists(lockfile))
                 File.Delete(lockfile);
         }
