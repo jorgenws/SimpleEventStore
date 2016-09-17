@@ -18,7 +18,7 @@ namespace EventStoreTests.PerformenceTesting
 
             IEventStoreBuilder builder = new EventStoreBuilder();
             var eventStore = builder.UseSQLiteRepository()
-                                    .Configuration(@"data source=d:\temp\events.db;journal_mode=WAL;")
+                                    .Configuration(@"data source=c:\temp\events.db;journal_mode=WAL;")
                                     .UseDummyPublisher()
                                     .Build();
 
@@ -52,7 +52,7 @@ namespace EventStoreTests.PerformenceTesting
         }
 
         [Test]
-        [Ignore("Performance test")]
+        //[Ignore("Performance test")]
         public void SaveHundredThousendEventsWithLMDBAndDummyPublisher()
         {
             int numberOfEvents = 1000000;
