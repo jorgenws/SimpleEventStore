@@ -7,12 +7,12 @@ namespace SimpleEventStore
 {
     public interface IEventPublisher
     {
-        bool Publish(List<EventTransaction> eventTransactions);
+        bool Publish(EventTransaction eventTransaction);
     }
 
     public class DummyEventPublisher : IEventPublisher
     {
-        public bool Publish(List<EventTransaction> eventTransactions)
+        public bool Publish(EventTransaction eventTransaction)
         {
             return true;
         }
@@ -32,32 +32,29 @@ namespace SimpleEventStore
             CreateExchange();
         }
 
-        public bool Publish(List<EventTransaction> eventTransactions)
+        public bool Publish(EventTransaction eventTransactions)
         {
             try
             {
                 using (var connection = _connectionFactory.CreateConnection())
                 using (var channel = connection.CreateModel())
                 {
-                    foreach (var transaction in eventTransactions)
+                    var publishedEvents = new PublishedEvents();
+                    publishedEvents.Events = eventTransactions.Events.Select(c => new PublishedEvent
                     {
-                        var publishedEvents = new PublishedEvents();
-                        publishedEvents.Events = transaction.Events.Select(c => new PublishedEvent
-                        {
-                            AggregateId = transaction.AggregateId,
-                            SerialNumber = 0,
-                            Event = c.SerializedEvent
-                        }).ToList();
-                        
-                        byte[] message = Serializer.Serialize(publishedEvents);
-                        channel.BasicPublish(exchange: _configuration.ExchangeName,
-                                             routingKey: "",
-                                             basicProperties: null,
-                                             body: message);
-                    }
+                        AggregateId = eventTransactions.AggregateId,
+                        SerialNumber = 0,
+                        Event = c.SerializedEvent
+                    }).ToList();
+
+                    byte[] message = Serializer.Serialize(publishedEvents);
+                    channel.BasicPublish(exchange: _configuration.ExchangeName,
+                                         routingKey: "",
+                                         basicProperties: null,
+                                         body: message);
                 }
             }
-            catch(Exception)
+            catch (Exception)
             {
                 return false;
             }

@@ -59,7 +59,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Event.cs" />
-    <Compile Include="EventConsumer.cs" />
+    <Compile Include="PersistenceQueue.cs" />
     <Compile Include="EventStore.cs" />
     <Compile Include="EventTransaction.cs" />
     <Compile Include="EventStoreBuilder.cs" />
@@ -70,6 +70,7 @@
     <Compile Include="LMDBRepositoryConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProtobufPublishedEventsSerializer.cs" />
+    <Compile Include="PublisherQueue.cs" />
     <Compile Include="SQLiteEventRepository.cs" />
     <Compile Include="SQLiteRepositoryConfiguration.cs" />
     <Compile Include="TransactionTask.cs" />

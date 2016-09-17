@@ -22,7 +22,7 @@ namespace EventStoreTests
             _repository.Setup(c => c.WriteEvents(It.IsAny<List<EventTransaction>>()))
                        .Returns(() => true);
             _publisher = new Mock<IEventPublisher>();
-            _publisher.Setup(c => c.Publish(It.IsAny<List<EventTransaction>>()))
+            _publisher.Setup(c => c.Publish(It.IsAny<EventTransaction>()))
                       .Returns(() => true);
 
             var eventStore = new EventStore(_repository.Object, _publisher.Object);
