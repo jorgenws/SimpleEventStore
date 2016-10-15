@@ -36,7 +36,7 @@ namespace SimpleEventStore
 
             using (var command = new SQLiteCommand(_connection))
             {
-                command.CommandText = string.Format("CREATE TABLE IF NOT EXISTS Events ({0} TEXT(36), {1} DateTime, {2} BLOB, {3} INTEGER)",
+                command.CommandText = string.Format("BEGIN;CREATE TABLE IF NOT EXISTS Events ({0} TEXT(36), {1} DateTime, {2} BLOB, {3} INTEGER);CREATE INDEX IF NOT EXISTS serialIdIndex ON Events ({3});COMMIT;",
                                                     aggregateIdField,
                                                     savedDateField,
                                                     serializedEventField,
