@@ -52,7 +52,7 @@ namespace EventStoreTests.PerformenceTesting
         }
 
         [Test]
-        //[Ignore("Performance test")]
+        [Ignore("Performance test")]
         public void SaveHundredThousendEventsWithLMDBAndDummyPublisher()
         {
             int numberOfEvents = 1000000;
