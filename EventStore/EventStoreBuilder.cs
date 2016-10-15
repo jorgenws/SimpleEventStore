@@ -7,9 +7,11 @@ namespace SimpleEventStore
         private RepositoryType _selectedRepo;
         private SQLiteRepositoryConfiguration _sqliteRepoConfig;
         private LMDBRepositoryConfiguration _lmdbRepoConfig;
+        private IEventRepository _customRepository;
         
         private PublisherType _selectedPublisher;
         private RabbitMQConfiguration _rabbitMQConfiguration;
+        private IEventPublisher _customPublisher;
 
         public ILMDBRepositoryBuilder UseLMDBRepository()
         {
@@ -20,6 +22,13 @@ namespace SimpleEventStore
         public ISQLiteRepositoryBuilder UseSQLiteRepository()
         {
             _selectedRepo = RepositoryType.SQLite;
+            return this;
+        }
+
+        public IEventPublisherBuilder UseCustom(IEventRepository repository)
+        {
+            _selectedRepo = RepositoryType.Custom;
+            _customRepository = repository;
             return this;
         }
 
@@ -38,6 +47,13 @@ namespace SimpleEventStore
         public IRabbitMqConfigurationBuilder UseRabbitMQ()
         {
             _selectedPublisher = PublisherType.RabbitMQ;
+            return this;
+        }
+
+        public IEventRepositoryBuild UseCustom(IEventPublisher publisher)
+        {
+            _selectedPublisher = PublisherType.Custom;
+            _customPublisher = publisher;
             return this;
         }
 
@@ -62,6 +78,8 @@ namespace SimpleEventStore
                 eventRepository = new LMDBEventRepository(_lmdbRepoConfig);
             else if (_selectedRepo == RepositoryType.SQLite && _sqliteRepoConfig != null)
                 eventRepository = new SQLiteEventRepository(_sqliteRepoConfig);
+            else if (_selectedRepo == RepositoryType.Custom)
+                eventRepository = _customRepository;
             else
                 throw new Exception("Missing data to build event repository");
 
@@ -69,6 +87,8 @@ namespace SimpleEventStore
                 eventPublisher = new RabbitMQEventPublisher(_rabbitMQConfiguration);
             else if (_selectedPublisher == PublisherType.Dummy)
                 eventPublisher = new DummyEventPublisher();
+            else if (_selectedPublisher == PublisherType.Custom)
+                eventPublisher = _customPublisher;
             else
                 throw new Exception("Missing data to build event publisher");
 
@@ -78,22 +98,27 @@ namespace SimpleEventStore
         public void Clear()
         {
             _selectedRepo = RepositoryType.NotSelected;
+            _selectedPublisher = PublisherType.NotSelected;
             _sqliteRepoConfig = null;
             _lmdbRepoConfig = null;
+            _customRepository = null;
+            _customPublisher = null;
         }
 
         private enum RepositoryType
         {
             NotSelected,
             LMDB,
-            SQLite
+            SQLite,
+            Custom
         }
 
         private enum PublisherType
         {
             NotSelected,
             RabbitMQ,
-            Dummy
+            Dummy,
+            Custom
         }
     }
 
@@ -101,6 +126,7 @@ namespace SimpleEventStore
     {
         ILMDBRepositoryBuilder UseLMDBRepository();
         ISQLiteRepositoryBuilder UseSQLiteRepository();
+        IEventPublisherBuilder UseCustom(IEventRepository repository);
         void Clear();
     }
 
@@ -117,6 +143,7 @@ namespace SimpleEventStore
     public interface IEventPublisherBuilder
     {
         IRabbitMqConfigurationBuilder UseRabbitMQ();
+        IEventRepositoryBuild UseCustom(IEventPublisher publisher);
         IEventRepositoryBuild UseDummyPublisher();
     }
 

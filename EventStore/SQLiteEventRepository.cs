@@ -36,6 +36,7 @@ namespace SimpleEventStore
 
             using (var command = new SQLiteCommand(_connection))
             {
+                //Index slows down inserts and the slow down increases with the size of the table.
                 command.CommandText = string.Format("BEGIN;CREATE TABLE IF NOT EXISTS Events ({0} TEXT(36), {1} DateTime, {2} BLOB, {3} INTEGER);CREATE INDEX IF NOT EXISTS serialIdIndex ON Events ({3});COMMIT;",
                                                     aggregateIdField,
                                                     savedDateField,
