@@ -15,7 +15,7 @@ namespace SimpleEventStore
         private Task _writerRunner;
         private Task _publisherRunner;
 
-        private const int BufferSize = 100000;
+        private const int BufferSize = 1000000;
 
         public EventStore(IEventRepository repository,
                           IEventPublisher publisher)
@@ -38,7 +38,9 @@ namespace SimpleEventStore
             var tcs = new TaskCompletionSource<bool>();
             var transactionTask = new TransactionTask(eventTransaction, tcs);
 
-            _writerQueue.Add(transactionTask);
+            //trys to add for ten millisecond. Not sure what is a good timeout here, but at least it wont block indefinitely
+            if (!_writerQueue.TryAdd(transactionTask, 10))
+                tcs.SetResult(false);
 
             return tcs.Task;
         }
