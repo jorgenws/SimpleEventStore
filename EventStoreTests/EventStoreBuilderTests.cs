@@ -26,6 +26,7 @@ namespace EventStoreTests
         }
 
         [Test]
+        [Category("Integration")]
         public void BuildLMDBEventStore()
         {
             IEventStoreBuilder builder = new EventStoreBuilder();

@@ -1,0 +1,99 @@
+﻿using NUnit.Framework;
+using SimpleEventStore;
+using System;
+using System.Collections.Concurrent;
+using System.Linq;
+using System.Threading.Tasks;
+
+namespace EventStoreTests.PerformanceTesting
+{
+    [TestFixture(Category = "Performance")]
+    public class RepositoryReadPerformanceTests
+    {
+        [Test]
+        [Ignore("Performance test")]
+        public void ReadOneMillionFromSqlite()
+        {
+            int numberOfEvents = 1000000;
+
+            IEventStoreBuilder builder = new EventStoreBuilder();
+            var eventStore = builder.UseSQLiteRepository()
+                                    .Configuration(@"data source=c:\temp\sqliteevents.db;journal_mode=WAL;")
+                                    .UseDummyPublisher()
+                                    .Build();
+
+            var tasks = new ConcurrentBag<Task>();
+            foreach (int i in Enumerable.Range(0, numberOfEvents))
+            {
+                tasks.Add(eventStore.Process(new EventTransaction
+                {
+                    AggregateId = Guid.NewGuid(),
+                    Events = new[] {
+                    new Event
+                    {
+                        SerializedEvent = BitConverter.GetBytes(i)
+                    }
+                }
+                }));
+            }
+
+            Task.WhenAll(tasks.ToArray()).Wait();
+
+            var before = DateTime.Now;
+
+            var x = eventStore.GetAllEvents(0, 1000000);
+
+            var after = DateTime.Now;
+
+            var timeInMilliseconds = (after - before).TotalMilliseconds;
+            var rate = numberOfEvents / (after - before).TotalSeconds;
+
+            eventStore.Dispose();
+
+            Assert.Pass(string.Format("Read {0} in {1} milliseconds, which is a rate of {2} per second", numberOfEvents, timeInMilliseconds, rate));
+        }
+
+        [Test]
+        [Ignore("Performance test")]
+        public void ReadOneMillionFromLMDB()
+        {
+            int numberOfEvents = 1000000;
+
+            IEventStoreBuilder builder = new EventStoreBuilder();
+            var eventStore = builder.UseLMDBRepository()
+                                    .Configuration(@"c:\temp\lmdbevents", 2, 524288000)
+                                    .UseDummyPublisher()
+                                    .Build();
+
+            var tasks = new ConcurrentBag<Task>();
+            foreach (int i in Enumerable.Range(0, numberOfEvents))
+            {
+                tasks.Add(eventStore.Process(new EventTransaction
+                {
+                    AggregateId = Guid.NewGuid(),
+                    Events = new[] {
+                    new Event
+                    {
+                        SerializedEvent = BitConverter.GetBytes(i)
+                    }
+                }
+                }));
+            }
+
+            Task.WhenAll(tasks.ToArray()).Wait();
+
+            var before = DateTime.Now;
+
+            var x = eventStore.GetAllEvents(0, 1000000);
+
+            var after = DateTime.Now;
+
+            var timeInMilliseconds = (after - before).TotalMilliseconds;
+            var rate = numberOfEvents / (after - before).TotalSeconds;
+
+            eventStore.Dispose();
+
+            Assert.Pass(string.Format("Read {0} in {1} milliseconds, which is a rate of {2} per second", numberOfEvents, timeInMilliseconds, rate));
+        }
+    }
+}

@@ -110,7 +110,7 @@ namespace SimpleEventStore
 
                 aggregateIndexCursor.MoveToFirstValueAfter(aggregateId.ToByteArray(), largerThanAsBytes);
 
-                //MoveToFistValueAfter stops at the first matching or greater.
+                //MoveToFirstValueAfter stops at the first matching or greater.
                 //Need to check if we are at a match or at a item that is greater the the serial number
                 if (aggregateIndexCursor.GetCurrent().Value.SequenceEqual(largerThanAsBytes))
                     aggregateIndexCursor.MoveNextDuplicate();
@@ -135,7 +135,9 @@ namespace SimpleEventStore
             using (var eventsDb = tx.OpenDatabase(EventDb))
             {
                 var eventsCursor = tx.CreateCursor(eventsDb);
-                eventsCursor.MoveToAndGet(fromAsBytes);
+                //eventsCursor.MoveToAndGet(fromAsBytes); //Buggy
+                eventsCursor.MoveTo(fromAsBytes);
+                eventsCursor.GetCurrent();
                 events.Add(new Event {SerializedEvent = eventsCursor.Current.Value});
 
                 bool reachedTo = false;

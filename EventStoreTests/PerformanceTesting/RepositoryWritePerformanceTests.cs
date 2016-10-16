@@ -7,12 +7,12 @@ using System.Threading.Tasks;
 
 namespace EventStoreTests.PerformenceTesting
 {
-    [TestFixture]
-    public class PerformanceTests
+    [TestFixture(Category = "Performance")]
+    public class RepositoryWritePerformanceTests
     {
         [Test]
         [Ignore("Performance test")]
-        public void SaveHundredThousendEventsWithSqliteAndDummyPublisher()
+        public void SaveOneMillionEventsWithSqliteAndDummyPublisher()
         {
             int numberOfEvents = 1000000;
 
@@ -53,7 +53,7 @@ namespace EventStoreTests.PerformenceTesting
 
         [Test]
         [Ignore("Performance test")]
-        public void SaveHundredThousendEventsWithLMDBAndDummyPublisher()
+        public void SaveOneMillionEventsWithLMDBAndDummyPublisher()
         {
             int numberOfEvents = 1000000;
 

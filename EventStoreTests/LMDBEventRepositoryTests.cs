@@ -8,7 +8,7 @@ using System.Text;
 
 namespace EventStoreTests
 {
-    [TestFixture]
+    [TestFixture(Category = "Integration")]
     public class LMDBEventRepositoryTests
     {
         const string EnvironmentPath = @"c:\lmdb";
@@ -16,6 +16,12 @@ namespace EventStoreTests
         private readonly Guid _aggregateId = Guid.Parse("{54A89539-D4CA-4061-AA6A-3F4719D8EBF3}");
 
         private LMDBEventRepository _lmdbEventRepository;
+
+        [OneTimeSetUp]
+        public void TestFixtureSetUp()
+        {
+            RemoveDataFromPreviousRun();
+        }
 
         [SetUp]
         public void SetUp()
@@ -208,13 +214,56 @@ namespace EventStoreTests
             Assert.AreEqual(eventData1, Encoding.UTF8.GetString(eventsForAggregate.First().SerializedEvent));
         }
 
+        [Test]
+        public void EventsFromMultipleAggregatesAreSavedAndAllEventsAreLoaded()
+        {
+            const string somethingThatHappend = "some data that happend";
 
+            var repository = _lmdbEventRepository;
 
+            var events = new List<EventTransaction>();
+            events.Add(new EventTransaction
+            {
+                AggregateId = Guid.NewGuid(),
+                Events = new[] {
+                    new Event
+                    {
+                        SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend)
+                    }
+                }
+            });
+
+            repository.WriteEvents(events);
+
+            events.Clear();
+
+            events.Add(new EventTransaction
+            {
+                AggregateId = Guid.NewGuid(),
+                Events = new[] {
+                    new Event
+                    {
+                        SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend)
+                    }
+                }
+            });
+
+            repository.WriteEvents(events);
+
+            var x = repository.GetAllEvents(0, 1);
+
+            CollectionAssert.IsNotEmpty(x);
+        }
+        
         [TearDown]
         public void TearDown()
         {
             _lmdbEventRepository.Dispose();
+            RemoveDataFromPreviousRun();
+        }
 
+        private void RemoveDataFromPreviousRun()
+        {
             var datafile = Path.Combine(EnvironmentPath, "data.mdb");
             if (File.Exists(datafile))
                 File.Delete(datafile);
