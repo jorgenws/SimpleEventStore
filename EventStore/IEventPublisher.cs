@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Linq;
-using RabbitMQ.Client;
 
 namespace SimpleEventStore
 {
-    public interface IEventPublisher
+    public interface IEventPublisher : IDisposable
     {
         bool Publish(EventTransaction eventTransaction);
     }
-
-
 }

@@ -8,8 +8,8 @@ namespace SimpleEventStore
     {
         readonly RabbitMQConfiguration _configuration;
         readonly IConnectionFactory _connectionFactory;
-        readonly IConnection _connection;
-        readonly IModel _channel;
+        IConnection _connection;
+        IModel _channel;
 
         IBinaryPublishedEventsSerializer Serializer { get { return _configuration.BinarySerializer; } }
 
@@ -17,9 +17,44 @@ namespace SimpleEventStore
         {
             _configuration = configuration;
             _connectionFactory = new ConnectionFactory { HostName = configuration.HostName };
+            SetUp();
+        }
+
+        private void SetUp()
+        {
             _connection = _connectionFactory.CreateConnection();
+            _connection.ConnectionShutdown += ConnectionShutdown;
             _channel = _connection.CreateModel();
+            _channel.ModelShutdown += ModelShutDown;
             _channel.ExchangeDeclare(_configuration.ExchangeName, ExchangeType.Fanout, durable: false);
+        }
+
+        private void ConnectionShutdown(object sender, ShutdownEventArgs args)
+        {
+            CleanUp();
+            SetUp();
+        }
+
+        private void ModelShutDown(object sender, ShutdownEventArgs e)
+        {
+            CleanUp();
+            SetUp();
+        }
+
+        private void CleanUp()
+        {
+            if (_channel != null)
+            {
+                _channel.ModelShutdown -= ModelShutDown;
+                _channel.Close();
+                _channel.Dispose();
+            }
+            if(_connection != null)
+            {
+                _connection.ConnectionShutdown -= ConnectionShutdown;
+                _connection.Close();
+                _connection.Dispose();
+            }
         }
 
         public bool Publish(EventTransaction eventTransactions)
@@ -49,6 +84,11 @@ namespace SimpleEventStore
             }
 
             return true;
+        }
+
+        public void Dispose()
+        {
+            CleanUp();
         }
     }
 

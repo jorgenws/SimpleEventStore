@@ -8,5 +8,7 @@ namespace EventStoreTests.HelperClasses
         {
             return true;
         }
+
+        public void Dispose() { }
     }
 }
