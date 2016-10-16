@@ -2,6 +2,7 @@
 using SimpleEventStore;
 using NUnit.Framework;
 using System.IO;
+using EventStoreTests.HelperClasses;
 
 namespace EventStoreTests
 {
@@ -16,7 +17,7 @@ namespace EventStoreTests
             EventStore es = null;
             Assert.DoesNotThrow(() => es = builder.UseSQLiteRepository()
                                                   .Configuration("Data Source =:memory:")
-                                                  .UseDummyPublisher()
+                                                  .UseCustom(new DummyEventPublisher())
                                                   .Build());
 
             Assert.NotNull(es);
@@ -34,7 +35,7 @@ namespace EventStoreTests
             EventStore es = null;
             Assert.DoesNotThrow(() => es = builder.UseLMDBRepository()
                                                   .Configuration(@"c:\lmdb", 2, 10485760)
-                                                  .UseDummyPublisher()
+                                                  .UseCustom(new DummyEventPublisher())
                                                   .Build());
 
             Assert.NotNull(es);

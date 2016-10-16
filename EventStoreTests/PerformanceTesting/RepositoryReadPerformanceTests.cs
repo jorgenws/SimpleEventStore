@@ -4,6 +4,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
+using EventStoreTests.HelperClasses;
 
 namespace EventStoreTests.PerformanceTesting
 {
@@ -19,7 +20,7 @@ namespace EventStoreTests.PerformanceTesting
             IEventStoreBuilder builder = new EventStoreBuilder();
             var eventStore = builder.UseSQLiteRepository()
                                     .Configuration(@"data source=c:\temp\sqliteevents.db;journal_mode=WAL;")
-                                    .UseDummyPublisher()
+                                    .UseCustom(new DummyEventPublisher())
                                     .Build();
 
             var tasks = new ConcurrentBag<Task>();
@@ -62,7 +63,7 @@ namespace EventStoreTests.PerformanceTesting
             IEventStoreBuilder builder = new EventStoreBuilder();
             var eventStore = builder.UseLMDBRepository()
                                     .Configuration(@"c:\temp\lmdbevents", 2, 524288000)
-                                    .UseDummyPublisher()
+                                    .UseCustom(new DummyEventPublisher())
                                     .Build();
 
             var tasks = new ConcurrentBag<Task>();

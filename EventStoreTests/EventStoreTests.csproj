@@ -107,6 +107,8 @@
     <Compile Include="EventStoreTests.cs" />
     <Compile Include="EventStoreBuilderTests.cs" />
     <Compile Include="LMDBEventRepositoryTests.cs" />
+    <Compile Include="HelperClasses\DummyEventPublisher.cs" />
+    <Compile Include="HelperClasses\DummyEventRepository.cs" />
     <Compile Include="PerformanceTesting\RepositoryReadPerformanceTests.cs" />
     <Compile Include="PerformanceTesting\RepositoryWritePerformanceTests.cs" />
     <Compile Include="ProtobufPublishedEventsSerializerTests.cs" />

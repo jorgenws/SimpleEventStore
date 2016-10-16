@@ -9,18 +9,12 @@ namespace SimpleEventStore
         bool Publish(EventTransaction eventTransaction);
     }
 
-    public class DummyEventPublisher : IEventPublisher
-    {
-        public bool Publish(EventTransaction eventTransaction)
-        {
-            return true;
-        }
-    }
-
     internal class RabbitMQEventPublisher : IEventPublisher
     {
         readonly RabbitMQConfiguration _configuration;
         readonly IConnectionFactory _connectionFactory;
+        readonly IConnection _connection;
+        readonly IModel _channel;
 
         IBinaryPublishedEventsSerializer Serializer { get { return _configuration.BinarySerializer; } }
         
@@ -28,30 +22,31 @@ namespace SimpleEventStore
         {
             _configuration = configuration;
             _connectionFactory = new ConnectionFactory { HostName = configuration.HostName };
-            CreateExchange();
+            _connection = _connectionFactory.CreateConnection();
+            _channel = _connection.CreateModel();
+            _channel.ExchangeDeclare(_configuration.ExchangeName, ExchangeType.Fanout, durable: false);
         }
 
         public bool Publish(EventTransaction eventTransactions)
         {
             try
             {
-                using (var connection = _connectionFactory.CreateConnection())
-                using (var channel = connection.CreateModel())
+                var publishedEvents = new PublishedEvents();
+                publishedEvents.Events = eventTransactions.Events.Select(c => new PublishedEvent
                 {
-                    var publishedEvents = new PublishedEvents();
-                    publishedEvents.Events = eventTransactions.Events.Select(c => new PublishedEvent
-                    {
-                        AggregateId = eventTransactions.AggregateId,
-                        SerialNumber = 0,
-                        Event = c.SerializedEvent
-                    }).ToList();
+                    AggregateId = eventTransactions.AggregateId,
+                    SerialNumber = 0,
+                    Event = c.SerializedEvent
+                }).ToList();
 
-                    byte[] message = Serializer.Serialize(publishedEvents);
-                    channel.BasicPublish(exchange: _configuration.ExchangeName,
-                                         routingKey: "",
-                                         basicProperties: null,
-                                         body: message);
-                }
+                byte[] message = Serializer.Serialize(publishedEvents);
+
+                    
+
+                _channel.BasicPublish(exchange: _configuration.ExchangeName,
+                                        routingKey: "",
+                                        basicProperties: null,
+                                        body: message);
             }
             catch (Exception)
             {
@@ -59,13 +54,6 @@ namespace SimpleEventStore
             }
 
             return true;
-        }
-
-        private void CreateExchange()
-        {
-            using (var conn = _connectionFactory.CreateConnection())
-            using (var channel = conn.CreateModel())
-                channel.ExchangeDeclare(_configuration.ExchangeName, ExchangeType.Fanout);
         }
     }
 
