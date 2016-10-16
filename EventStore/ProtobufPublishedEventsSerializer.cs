@@ -8,32 +8,32 @@ namespace SimpleEventStore
     {
         public ProtobufPublishedEventsSerializer()
         {
-            if (!RuntimeTypeModel.Default.IsDefined(typeof(PublishedEvent)))
-                RuntimeTypeModel.Default.Add(typeof(PublishedEvent), false)
+            if (!RuntimeTypeModel.Default.IsDefined(typeof(Event)))
+                RuntimeTypeModel.Default.Add(typeof(Event), false)
+                                            .Add(1, "SerialId")
+                                            .Add(2, "SerializedEvent");
+            if (!RuntimeTypeModel.Default.IsDefined(typeof(EventTransaction)))
+                RuntimeTypeModel.Default.Add(typeof(EventTransaction), false)
                                             .Add(1, "AggregateId")
-                                            .Add(2, "SerialNumber")
-                                            .Add(3, "Event");
-            if (!RuntimeTypeModel.Default.IsDefined(typeof(PublishedEvents)))
-                RuntimeTypeModel.Default.Add(typeof(PublishedEvents), false)
-                                            .Add(1, "Events");
+                                            .Add(2, "Events");
         }
         
-        public byte[] Serialize(PublishedEvents publishedEvents)
+        public byte[] Serialize(EventTransaction eventTransaction)
         {
             using (var ms = new MemoryStream())
             {
-                Serializer.Serialize(ms, publishedEvents);
+                Serializer.Serialize(ms, eventTransaction);
                 ms.Position = 0;
                 return ms.ToArray();
             }
         }
 
-        public PublishedEvents Deserialize(byte[] bytes)
+        public EventTransaction Deserialize(byte[] bytes)
         {
             using(var ms = new MemoryStream(bytes))
             {
                 ms.Position = 0;
-                return Serializer.Deserialize<PublishedEvents>(ms);
+                return Serializer.Deserialize<EventTransaction>(ms);
             }
         }
     }

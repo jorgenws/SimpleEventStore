@@ -34,6 +34,7 @@ namespace SimpleEventStore
                 {
                     foreach (var @event in transaction.Events)
                     {
+                        @event.SerialId = _nextSerialNumber;
                         byte[] nextSerialNumber = BitConverter.GetBytes(_nextSerialNumber);
                         byte[] aggregateId = transaction.AggregateId.ToByteArray();
 
@@ -53,7 +54,6 @@ namespace SimpleEventStore
         private int NextSerialNumber()
         {
             byte[] key;
-
 
             using (var tx = _environment.BeginTransaction(TransactionBeginFlags.ReadOnly))
             {

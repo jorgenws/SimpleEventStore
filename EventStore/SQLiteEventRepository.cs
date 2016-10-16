@@ -83,6 +83,7 @@ namespace SimpleEventStore
                 {
                     foreach (var @event in eventTransaction.Events)
                     {
+                        @event.SerialId = _nextSerialNumber;
                         command.Transaction = transaction;
                         command.Parameters[aggregateIdParameter].Value = eventTransaction.AggregateId.ToString("D");
                         command.Parameters[serializedEventParameter].Value = @event.SerializedEvent;

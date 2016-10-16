@@ -61,18 +61,7 @@ namespace SimpleEventStore
         {
             try
             {
-                var publishedEvents = new PublishedEvents();
-                publishedEvents.Events = eventTransactions.Events.Select(c => new PublishedEvent
-                {
-                    AggregateId = eventTransactions.AggregateId,
-                    SerialNumber = 0,
-                    Event = c.SerializedEvent
-                }).ToList();
-
-                byte[] message = Serializer.Serialize(publishedEvents);
-
-
-
+                byte[] message = Serializer.Serialize(eventTransactions);
                 _channel.BasicPublish(exchange: _configuration.ExchangeName,
                                         routingKey: "",
                                         basicProperties: null,
