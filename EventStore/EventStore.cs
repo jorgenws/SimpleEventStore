@@ -64,6 +64,8 @@ namespace SimpleEventStore
         {
             _writerQueue.CompleteAdding();
             _writerRunner.Wait();
+            _publisherQueue.CompleteAdding();
+            _publisherRunner.Wait();
         }
     }
 }

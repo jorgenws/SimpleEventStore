@@ -94,7 +94,7 @@ namespace SimpleEventStore
                 }
                 transaction.Commit();
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 success = false;
             }

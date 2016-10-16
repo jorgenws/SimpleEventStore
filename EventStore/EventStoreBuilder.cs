@@ -92,6 +92,8 @@ namespace SimpleEventStore
             else
                 throw new Exception("Missing data to build event publisher");
 
+            Clear();
+
             return new EventStore(eventRepository, eventPublisher);
         }
 

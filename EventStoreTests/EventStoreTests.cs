@@ -16,7 +16,7 @@ namespace EventStoreTests
         private Mock<IEventPublisher> _publisher;
 
         [Test]
-        public void SendEventsToConsumerGetsSentToRepository()
+        public void SendEventsToConsumerGetsSentToRepositoryAndPublisher()
         {
             _repository = new Mock<IEventRepository>();
             _repository.Setup(c => c.WriteEvents(It.IsAny<List<EventTransaction>>()))
@@ -36,6 +36,7 @@ namespace EventStoreTests
             eventStore.Process(eventTransaction).Wait();
 
             _repository.Verify(c => c.WriteEvents(It.IsAny<List<EventTransaction>>()), Times.AtLeastOnce());
+            _publisher.Verify(c => c.Publish(It.IsAny<EventTransaction>()), Times.AtLeastOnce());
 
             eventStore.Dispose();
         }

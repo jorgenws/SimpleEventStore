@@ -18,7 +18,7 @@ namespace EventStoreTests.PerformenceTesting
 
             IEventStoreBuilder builder = new EventStoreBuilder();
             var eventStore = builder.UseSQLiteRepository()
-                                    .Configuration(@"data source=c:\temp\events.db;journal_mode=WAL;")
+                                    .Configuration(@"data source=c:\temp\sqliteevents.db;journal_mode=WAL;")
                                     .UseDummyPublisher()
                                     .Build();
 
@@ -48,7 +48,7 @@ namespace EventStoreTests.PerformenceTesting
 
             eventStore.Dispose();
 
-            Assert.Pass(string.Format("Added {0} in {1} millisecons, which is a rate of {2} per second", numberOfEvents, timeInMilliseconds, rate));
+            Assert.Pass(string.Format("Added {0} in {1} milliseconds, which is a rate of {2} per second", numberOfEvents, timeInMilliseconds, rate));
         }
 
         [Test]
@@ -66,7 +66,7 @@ namespace EventStoreTests.PerformenceTesting
 
             IEventStoreBuilder builder = new EventStoreBuilder();
             var eventStore = builder.UseLMDBRepository()
-                                    .Configuration(@"c:\temp\events.db", 2, 524288000)
+                                    .Configuration(@"c:\temp\lmdbevents", 2, 524288000)
                                     .UseDummyPublisher()
                                     .Build();
 
@@ -96,7 +96,7 @@ namespace EventStoreTests.PerformenceTesting
 
             eventStore.Dispose();
 
-            Assert.Pass(string.Format("Added {0} in {1} millisecons, which is a rate of {2} per second", numberOfEvents, timeInMilliseconds, rate));
+            Assert.Pass(string.Format("Added {0} in {1} milliseconds, which is a rate of {2} per second", numberOfEvents, timeInMilliseconds, rate));
         }
     }
 }

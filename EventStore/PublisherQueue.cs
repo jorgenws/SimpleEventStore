@@ -38,7 +38,6 @@ namespace SimpleEventStore
             }
 
             _publishQueue.Dispose();
-            //_publisher.Dispose();
         }
 
         private bool TryPublish(TransactionTask transactionBatch)
