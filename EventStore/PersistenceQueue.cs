@@ -65,6 +65,8 @@ namespace SimpleEventStore
             bool success = false;
             int retriesLeft = 5;
 
+            SetSerialNumber(transactionBatch);
+
             var eventTransactions = new List<EventTransaction>();
             foreach (var eventTransaction in transactionBatch)
                 eventTransactions.Add(eventTransaction.Transaction);
@@ -76,6 +78,13 @@ namespace SimpleEventStore
             }
 
             return success;
+        }
+
+        private void SetSerialNumber(List<TransactionTask> transactionBatch)
+        {
+            foreach (var transaction in transactionBatch)
+                foreach (var @event in transaction.Transaction.Events)
+                    @event.SerialId = _repository.NextSerialNumber();
         }
     }
 }

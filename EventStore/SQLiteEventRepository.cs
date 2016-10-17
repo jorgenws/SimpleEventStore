@@ -83,13 +83,11 @@ namespace SimpleEventStore
                 {
                     foreach (var @event in eventTransaction.Events)
                     {
-                        @event.SerialId = _nextSerialNumber;
                         command.Transaction = transaction;
                         command.Parameters[aggregateIdParameter].Value = eventTransaction.AggregateId.ToString("D");
                         command.Parameters[serializedEventParameter].Value = @event.SerializedEvent;
                         command.Parameters[savedDateParameter].Value = utcNow;
-                        command.Parameters[serialNumberParameter].Value = _nextSerialNumber;
-                        _nextSerialNumber++;
+                        command.Parameters[serialNumberParameter].Value = @event.SerialId;
                         command.ExecuteNonQuery();
                     }
                 }
@@ -204,6 +202,11 @@ namespace SimpleEventStore
         {
             _insertCommand.Dispose();
             _connection.Dispose();
+        }
+
+        public int NextSerialNumber()
+        {
+            return _nextSerialNumber++;
         }
     }
 }

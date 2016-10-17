@@ -21,7 +21,7 @@ namespace SimpleEventStore
             _environment.MapSize = configuration.MapSize;
             _environment.Open();
 
-            _nextSerialNumber = NextSerialNumber();
+            _nextSerialNumber = InitSerialNumber();
         }
 
         public bool WriteEvents(List<EventTransaction> eventTransactions)
@@ -34,14 +34,11 @@ namespace SimpleEventStore
                 {
                     foreach (var @event in transaction.Events)
                     {
-                        @event.SerialId = _nextSerialNumber;
-                        byte[] nextSerialNumber = BitConverter.GetBytes(_nextSerialNumber);
+                        byte[] nextSerialNumber = BitConverter.GetBytes(@event.SerialId);
                         byte[] aggregateId = transaction.AggregateId.ToByteArray();
 
                         tx.Put(eventDb, nextSerialNumber, @event.SerializedEvent, PutOptions.AppendData);
                         tx.Put(aggregateIndex, aggregateId, nextSerialNumber, PutOptions.AppendDuplicateData);
-
-                        ++_nextSerialNumber;
                     }
                 }
 
@@ -51,7 +48,7 @@ namespace SimpleEventStore
             return true;
         }
 
-        private int NextSerialNumber()
+        private int InitSerialNumber()
         {
             byte[] key;
 
@@ -157,6 +154,11 @@ namespace SimpleEventStore
         public void Dispose()
         {
             _environment.Dispose();
+        }
+
+        public int NextSerialNumber()
+        {
+            return _nextSerialNumber++;
         }
     }
 }

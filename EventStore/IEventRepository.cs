@@ -12,5 +12,6 @@ namespace SimpleEventStore
         Event[] GetEventsForAggregate(Guid aggregateId);
         Event[] GetEventsForAggregate(Guid aggregateId, int largerThan);
         Event[] GetAllEvents(int from, int to);
+        int NextSerialNumber();
     }
 }

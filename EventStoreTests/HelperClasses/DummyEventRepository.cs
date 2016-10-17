@@ -6,10 +6,7 @@ namespace EventStoreTests.HelperClasses
 {
     public class DummyEventRepository : IEventRepository
     {
-        public void Dispose()
-        {
-
-        }
+        public void Dispose() { }
 
         public Event[] GetAllEvents(int from, int to)
         {
@@ -24,6 +21,11 @@ namespace EventStoreTests.HelperClasses
         public Event[] GetEventsForAggregate(Guid aggregateId, int largerThan)
         {
             throw new NotImplementedException();
+        }
+
+        public int NextSerialNumber()
+        {
+            return 0;
         }
 
         public bool WriteEvents(List<EventTransaction> eventTransaction)

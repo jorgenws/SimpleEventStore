@@ -169,6 +169,7 @@ namespace EventStoreTests
                 {
                     new Event
                     {
+                        SerialId = 0,
                         SerializedEvent = Encoding.UTF8.GetBytes(eventData)
                     }
                 }
@@ -180,10 +181,12 @@ namespace EventStoreTests
                 {
                     new Event
                     {
+                        SerialId = 1,
                         SerializedEvent = Encoding.UTF8.GetBytes("some data that has happend")
                     },
                     new Event
                     {
+                        SerialId = 2,
                         SerializedEvent = Encoding.UTF8.GetBytes(eventData1)
                     }
                 }
@@ -197,7 +200,20 @@ namespace EventStoreTests
             Assert.AreEqual(eventData1, Encoding.UTF8.GetString(eventsForAggregate.First().SerializedEvent));
         }
 
+        [Test]
+        public void NextSerialNumberReturnsNumberIncreasingWithOne()
+        {
+            var repository = GetInMemorySQLiteEventRepository();
 
+            var first = repository.NextSerialNumber();
+            var second = repository.NextSerialNumber();
+            var third = repository.NextSerialNumber();
+
+            Assert.AreEqual(0, first);
+            Assert.AreEqual(1, second);
+            Assert.AreEqual(2, third);
+        }
+        
         private SQLiteEventRepository GetInMemorySQLiteEventRepository()
         {
             return new SQLiteEventRepository(new SQLiteRepositoryConfiguration("Data Source=:memory:"));

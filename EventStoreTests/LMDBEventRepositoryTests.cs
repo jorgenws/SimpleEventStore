@@ -73,10 +73,12 @@ namespace EventStoreTests
                 Events = new[] {
                     new Event
                     {
+                        SerialId = 0,
                         SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend)
                     },
                     new Event
                     {
+                        SerialId = 1,
                         SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend)
                     }
                 }
@@ -107,13 +109,26 @@ namespace EventStoreTests
                 Events = new[] {
                     new Event
                     {
+                        SerialId = 0,
+                        SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend)
+                    }
+                }
+            });
+            var events2 = new List<EventTransaction>();
+            events2.Add(new EventTransaction
+            {
+                AggregateId = _aggregateId,
+                Events = new[] {
+                    new Event
+                    {
+                        SerialId = 1,
                         SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend)
                     }
                 }
             });
 
             var success = repository.WriteEvents(events);
-            var success2 = repository.WriteEvents(events);
+            var success2 = repository.WriteEvents(events2);
 
             var eventsForAggregate = repository.GetEventsForAggregate(_aggregateId);
 
@@ -139,10 +154,12 @@ namespace EventStoreTests
                 {
                     new Event
                     {
+                        SerialId = 0,
                         SerializedEvent = Encoding.UTF8.GetBytes("some data that has happend")
                     },
                     new Event
                     {
+                        SerialId = 1,
                         SerializedEvent = Encoding.UTF8.GetBytes("Something else")
                     }
                 }
@@ -156,6 +173,7 @@ namespace EventStoreTests
                 {
                     new Event
                     {
+                        SerialId = 3,
                         SerializedEvent = Encoding.UTF8.GetBytes(eventData)
                     }
                 }
@@ -186,6 +204,7 @@ namespace EventStoreTests
                 {
                     new Event
                     {
+                        SerialId = 0,
                         SerializedEvent = Encoding.UTF8.GetBytes(eventData)
                     }
                 }
@@ -197,10 +216,12 @@ namespace EventStoreTests
                 {
                     new Event
                     {
+                        SerialId = 1,
                         SerializedEvent = Encoding.UTF8.GetBytes("some data that has happend")
                     },
                     new Event
                     {
+                        SerialId = 2,
                         SerializedEvent = Encoding.UTF8.GetBytes(eventData1)
                     }
                 }
@@ -228,6 +249,7 @@ namespace EventStoreTests
                 Events = new[] {
                     new Event
                     {
+                        SerialId = 0,
                         SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend)
                     }
                 }
@@ -243,6 +265,7 @@ namespace EventStoreTests
                 Events = new[] {
                     new Event
                     {
+                        SerialId = 1,
                         SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend)
                     }
                 }
@@ -254,7 +277,21 @@ namespace EventStoreTests
 
             CollectionAssert.IsNotEmpty(x);
         }
-        
+
+        [Test]
+        public void NextSerialNumberReturnsNumberIncreasingWithOne()
+        {
+            var repository = _lmdbEventRepository;
+
+            var first = repository.NextSerialNumber();
+            var second = repository.NextSerialNumber();
+            var third = repository.NextSerialNumber();
+
+            Assert.AreEqual(0, first);
+            Assert.AreEqual(1, second);
+            Assert.AreEqual(2, third);
+        }
+
         [TearDown]
         public void TearDown()
         {
