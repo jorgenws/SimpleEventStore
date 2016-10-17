@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using NUnit.Framework;
 using SimpleEventStore;
 
@@ -17,11 +16,11 @@ namespace EventStoreTests
 
             var events = new EventTransaction
             {
-                AggregateId = aggreagateId,
                 Events = new []
                 {
                     new Event
                     {
+                        AggregateId = aggreagateId,
                         SerialId = serialNumber,
                         SerializedEvent = @event
                     }
@@ -35,7 +34,7 @@ namespace EventStoreTests
             var publishedEvents = serializer.Deserialize(result);
             var publishedEvent = publishedEvents.Events[0];
 
-            Assert.AreEqual(aggreagateId, publishedEvents.AggregateId);
+            Assert.AreEqual(aggreagateId, publishedEvents.Events[0].AggregateId);
             Assert.AreEqual(serialNumber, publishedEvent.SerialId);
             Assert.AreEqual(@event, publishedEvent.SerializedEvent);
         }
@@ -51,16 +50,17 @@ namespace EventStoreTests
 
             var events = new EventTransaction
             {
-                AggregateId = aggreagateId1,
-                Events = new []
+                Events = new[]
                 {
                     new Event
                     {
+                        AggregateId = aggreagateId1,
                         SerialId = serialNumber1,
                         SerializedEvent = event1
                     },
                     new Event
                     {
+                        AggregateId = aggreagateId1,
                         SerialId = serialNumber2,
                         SerializedEvent = event2
                     }
@@ -74,7 +74,7 @@ namespace EventStoreTests
             var publishedEvents = serializer.Deserialize(result);
             var publishedEvent = publishedEvents.Events[0];
 
-            Assert.AreEqual(aggreagateId1, publishedEvents.AggregateId);
+            Assert.AreEqual(aggreagateId1, publishedEvents.Events[0].AggregateId);
             Assert.AreEqual(serialNumber1, publishedEvent.SerialId);
             Assert.AreEqual(event1, publishedEvent.SerializedEvent);
 

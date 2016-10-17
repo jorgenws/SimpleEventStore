@@ -35,7 +35,7 @@ namespace SimpleEventStore
                     foreach (var @event in transaction.Events)
                     {
                         byte[] nextSerialNumber = BitConverter.GetBytes(@event.SerialId);
-                        byte[] aggregateId = transaction.AggregateId.ToByteArray();
+                        byte[] aggregateId = @event.AggregateId.ToByteArray();
 
                         tx.Put(eventDb, nextSerialNumber, @event.SerializedEvent, PutOptions.AppendData);
                         tx.Put(aggregateIndex, aggregateId, nextSerialNumber, PutOptions.AppendDuplicateData);

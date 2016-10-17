@@ -39,10 +39,11 @@ namespace EventStoreTests
             var events = new List<EventTransaction>();
             events.Add(new EventTransaction
             {
-                AggregateId = _aggregateId,
                 Events = new[] {
                     new Event
                     {
+                        AggregateId = _aggregateId,
+                        SerialId = 0,
                         SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend)
                     }
                 }
@@ -69,15 +70,16 @@ namespace EventStoreTests
             var events = new List<EventTransaction>();
             events.Add(new EventTransaction
             {
-                AggregateId = _aggregateId,
                 Events = new[] {
                     new Event
                     {
+                        AggregateId = _aggregateId,
                         SerialId = 0,
                         SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend)
                     },
                     new Event
                     {
+                        AggregateId = _aggregateId,
                         SerialId = 1,
                         SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend)
                     }
@@ -105,10 +107,10 @@ namespace EventStoreTests
             var events = new List<EventTransaction>();
             events.Add(new EventTransaction
             {
-                AggregateId = _aggregateId,
                 Events = new[] {
                     new Event
                     {
+                        AggregateId = _aggregateId,
                         SerialId = 0,
                         SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend)
                     }
@@ -117,10 +119,10 @@ namespace EventStoreTests
             var events2 = new List<EventTransaction>();
             events2.Add(new EventTransaction
             {
-                AggregateId = _aggregateId,
                 Events = new[] {
                     new Event
                     {
+                        AggregateId = _aggregateId,
                         SerialId = 1,
                         SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend)
                     }
@@ -149,16 +151,17 @@ namespace EventStoreTests
             var events = new List<EventTransaction>();
             events.Add(new EventTransaction
             {
-                AggregateId = _aggregateId,
                 Events = new[]
                 {
                     new Event
                     {
+                        AggregateId = _aggregateId,
                         SerialId = 0,
                         SerializedEvent = Encoding.UTF8.GetBytes("some data that has happend")
                     },
                     new Event
                     {
+                        AggregateId = _aggregateId,
                         SerialId = 1,
                         SerializedEvent = Encoding.UTF8.GetBytes("Something else")
                     }
@@ -168,11 +171,11 @@ namespace EventStoreTests
             const string eventData = "some data";
             events.Add(new EventTransaction
             {
-                AggregateId = aggregateId2,
                 Events = new[]
                 {
                     new Event
                     {
+                        AggregateId = aggregateId2,
                         SerialId = 3,
                         SerializedEvent = Encoding.UTF8.GetBytes(eventData)
                     }
@@ -199,11 +202,11 @@ namespace EventStoreTests
             const string eventData = "some data";
             events.Add(new EventTransaction
             {
-                AggregateId = aggregateId2,
                 Events = new[]
                 {
                     new Event
                     {
+                        AggregateId = aggregateId2,
                         SerialId = 0,
                         SerializedEvent = Encoding.UTF8.GetBytes(eventData)
                     }
@@ -211,16 +214,17 @@ namespace EventStoreTests
             });
             events.Add(new EventTransaction
             {
-                AggregateId = _aggregateId,
                 Events = new[]
                 {
                     new Event
                     {
+                        AggregateId = _aggregateId,
                         SerialId = 1,
                         SerializedEvent = Encoding.UTF8.GetBytes("some data that has happend")
                     },
                     new Event
                     {
+                        AggregateId = _aggregateId,
                         SerialId = 2,
                         SerializedEvent = Encoding.UTF8.GetBytes(eventData1)
                     }
@@ -245,10 +249,10 @@ namespace EventStoreTests
             var events = new List<EventTransaction>();
             events.Add(new EventTransaction
             {
-                AggregateId = Guid.NewGuid(),
                 Events = new[] {
                     new Event
                     {
+                        AggregateId = Guid.NewGuid(),
                         SerialId = 0,
                         SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend)
                     }
@@ -261,10 +265,10 @@ namespace EventStoreTests
 
             events.Add(new EventTransaction
             {
-                AggregateId = Guid.NewGuid(),
                 Events = new[] {
                     new Event
                     {
+                        AggregateId = Guid.NewGuid(),
                         SerialId = 1,
                         SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend)
                     }

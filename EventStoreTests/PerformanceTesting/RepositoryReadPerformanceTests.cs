@@ -16,6 +16,7 @@ namespace EventStoreTests.PerformanceTesting
         public void ReadOneMillionFromSqlite()
         {
             int numberOfEvents = 1000000;
+            int serialId = 0;
 
             IEventStoreBuilder builder = new EventStoreBuilder();
             var eventStore = builder.UseSQLiteRepository()
@@ -28,10 +29,11 @@ namespace EventStoreTests.PerformanceTesting
             {
                 tasks.Add(eventStore.Process(new EventTransaction
                 {
-                    AggregateId = Guid.NewGuid(),
                     Events = new[] {
                     new Event
                     {
+                        AggregateId = Guid.NewGuid(),
+                        SerialId = serialId++,
                         SerializedEvent = BitConverter.GetBytes(i)
                     }
                 }
@@ -59,6 +61,7 @@ namespace EventStoreTests.PerformanceTesting
         public void ReadOneMillionFromLMDB()
         {
             int numberOfEvents = 1000000;
+            int serialId = 0;
 
             IEventStoreBuilder builder = new EventStoreBuilder();
             var eventStore = builder.UseLMDBRepository()
@@ -71,10 +74,11 @@ namespace EventStoreTests.PerformanceTesting
             {
                 tasks.Add(eventStore.Process(new EventTransaction
                 {
-                    AggregateId = Guid.NewGuid(),
                     Events = new[] {
                     new Event
                     {
+                        AggregateId = Guid.NewGuid(),
+                        SerialId = serialId++,
                         SerializedEvent = BitConverter.GetBytes(i)
                     }
                 }

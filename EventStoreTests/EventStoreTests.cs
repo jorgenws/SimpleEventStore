@@ -29,8 +29,7 @@ namespace EventStoreTests
 
             var eventTransaction = new EventTransaction
             {
-                AggregateId = _aggregateId,
-                Events = new[] {new Event {SerializedEvent = Encoding.UTF8.GetBytes("some data")}}
+                Events = new[] {new Event { AggregateId = _aggregateId, SerializedEvent = Encoding.UTF8.GetBytes("some data")}}
             };
 
             eventStore.Process(eventTransaction).Wait();

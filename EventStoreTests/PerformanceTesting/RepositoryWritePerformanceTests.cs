@@ -16,6 +16,7 @@ namespace EventStoreTests.PerformenceTesting
         public void SaveOneMillionEventsWithSqliteAndDummyPublisher()
         {
             int numberOfEvents = 1000000;
+            int serialId = 0;
 
             IEventStoreBuilder builder = new EventStoreBuilder();
             var eventStore = builder.UseSQLiteRepository()
@@ -30,10 +31,11 @@ namespace EventStoreTests.PerformenceTesting
             {
                 tasks.Add(eventStore.Process(new EventTransaction
                 {
-                    AggregateId = Guid.NewGuid(),
                     Events = new[] {
                     new Event
                     {
+                        AggregateId = Guid.NewGuid(),
+                        SerialId = serialId++,
                         SerializedEvent = BitConverter.GetBytes(i)
                     }
                 }
@@ -57,6 +59,7 @@ namespace EventStoreTests.PerformenceTesting
         public void SaveOneMillionEventsWithLMDBAndDummyPublisher()
         {
             int numberOfEvents = 1000000;
+            int serialId = 0;
 
             //For some reason, the values higher than 500 MB does not work.
 
@@ -78,10 +81,11 @@ namespace EventStoreTests.PerformenceTesting
             {
                 tasks.Add(eventStore.Process(new EventTransaction
                 {
-                    AggregateId = Guid.NewGuid(),
                     Events = new[] {
                     new Event
                     {
+                        AggregateId = Guid.NewGuid(),
+                        SerialId = serialId++,
                         SerializedEvent = BitConverter.GetBytes(i)
                     }
                 }

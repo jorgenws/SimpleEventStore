@@ -10,12 +10,12 @@ namespace SimpleEventStore
         {
             if (!RuntimeTypeModel.Default.IsDefined(typeof(Event)))
                 RuntimeTypeModel.Default.Add(typeof(Event), false)
-                                            .Add(1, "SerialId")
-                                            .Add(2, "SerializedEvent");
+                                            .Add(1, "AggregateId")
+                                            .Add(2, "SerialId")
+                                            .Add(3, "SerializedEvent");
             if (!RuntimeTypeModel.Default.IsDefined(typeof(EventTransaction)))
                 RuntimeTypeModel.Default.Add(typeof(EventTransaction), false)
-                                            .Add(1, "AggregateId")
-                                            .Add(2, "Events");
+                                            .Add(1, "Events");
         }
         
         public byte[] Serialize(EventTransaction eventTransaction)
