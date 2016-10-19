@@ -11,6 +11,7 @@ namespace EventStoreTests
     public class SQLiteEventRepositoryTests
     {
         private readonly Guid _aggregateId = Guid.Parse("{54A89539-D4CA-4061-AA6A-3F4719D8EBF3}");
+        private const string EventType = "AEventType";
 
         [Test]
         public void EventIsSavedAndLoadedSuccesfully()
@@ -27,7 +28,8 @@ namespace EventStoreTests
                     {
                         AggregateId = _aggregateId,
                         SerialId = 0,
-                        SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend)
+                        SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend),
+                        EventType = EventType
                     }
                 }
             });
@@ -58,13 +60,15 @@ namespace EventStoreTests
                     {
                         AggregateId = _aggregateId,
                         SerialId = 0,
-                        SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend)
+                        SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend),
+                        EventType = EventType
                     },
                     new Event
                     {
                         AggregateId = _aggregateId,
                         SerialId = 1,
-                        SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend)
+                        SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend),
+                        EventType = EventType
                     }
                 }
             });
@@ -96,7 +100,8 @@ namespace EventStoreTests
                     {
                         AggregateId = _aggregateId,
                         SerialId = 0,
-                        SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend)
+                        SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend),
+                        EventType = EventType
                     }
                 }
             });
@@ -129,13 +134,15 @@ namespace EventStoreTests
                     {
                         AggregateId = _aggregateId,
                         SerialId = 0,
-                        SerializedEvent = Encoding.UTF8.GetBytes("some data that has happend")
+                        SerializedEvent = Encoding.UTF8.GetBytes("some data that has happend"),
+                        EventType = EventType
                     },
                     new Event
                     {
                         AggregateId = _aggregateId,
                         SerialId = 1,
-                        SerializedEvent = Encoding.UTF8.GetBytes("Something else")
+                        SerializedEvent = Encoding.UTF8.GetBytes("Something else"),
+                        EventType = EventType
                     }
                 }
             });
@@ -149,7 +156,8 @@ namespace EventStoreTests
                     {
                         AggregateId = aggregateId2,
                         SerialId = 2,
-                        SerializedEvent = Encoding.UTF8.GetBytes(eventData)
+                        SerializedEvent = Encoding.UTF8.GetBytes(eventData),
+                        EventType = EventType
                     }
                 }
             });
@@ -180,7 +188,8 @@ namespace EventStoreTests
                     {
                         AggregateId = aggregateId2,
                         SerialId = 0,
-                        SerializedEvent = Encoding.UTF8.GetBytes(eventData)
+                        SerializedEvent = Encoding.UTF8.GetBytes(eventData),
+                        EventType = EventType
                     }
                 }
             });
@@ -192,13 +201,15 @@ namespace EventStoreTests
                     {
                         AggregateId = _aggregateId,
                         SerialId = 1,
-                        SerializedEvent = Encoding.UTF8.GetBytes("some data that has happend")
+                        SerializedEvent = Encoding.UTF8.GetBytes("some data that has happend"),
+                        EventType = EventType
                     },
                     new Event
                     {
                         AggregateId = _aggregateId,
                         SerialId = 2,
-                        SerializedEvent = Encoding.UTF8.GetBytes(eventData1)
+                        SerializedEvent = Encoding.UTF8.GetBytes(eventData1),
+                        EventType = EventType
                     }
                 }
             });
