@@ -12,7 +12,7 @@ namespace EventStoreTests.PerformanceTesting
     public class RepositoryReadPerformanceTests
     {
         [Test]
-        //[Ignore("Performance test")]
+        [Ignore("Performance test")]
         public void ReadOneMillionFromSqlite()
         {
             int numberOfEvents = 1000000;
@@ -58,7 +58,7 @@ namespace EventStoreTests.PerformanceTesting
         }
 
         [Test]
-        //[Ignore("Performance test")]
+        [Ignore("Performance test")]
         public void ReadOneMillionFromLMDB()
         {
             int numberOfEvents = 1000000;

@@ -12,7 +12,7 @@ namespace EventStoreTests.PerformenceTesting
     public class RepositoryWritePerformanceTests
     {
         [Test]
-        //[Ignore("Performance test")]
+        [Ignore("Performance test")]
         public void SaveOneMillionEventsWithSqliteAndDummyPublisher()
         {
             int numberOfEvents = 1000000;
@@ -56,7 +56,7 @@ namespace EventStoreTests.PerformenceTesting
         }
 
         [Test]
-        //[Ignore("Performance test")]
+        [Ignore("Performance test")]
         public void SaveOneMillionEventsWithLMDBAndDummyPublisher()
         {
             int numberOfEvents = 1000000;
