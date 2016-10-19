@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SimpleEventStore
@@ -35,6 +36,9 @@ namespace SimpleEventStore
 
         public Task<bool> Process(EventTransaction eventTransaction)
         {
+            if (eventTransaction.Events.Any(c => c.AggregateId == Guid.Empty || string.IsNullOrWhiteSpace(c.EventType) || c.SerializedEvent == null || !c.SerializedEvent.Any()))
+                throw new InvalidOperationException("AggregateId, EventType and SerializedEvent can not be empty");
+
             var tcs = new TaskCompletionSource<bool>();
             var transactionTask = new TransactionTask(eventTransaction, tcs);
 
