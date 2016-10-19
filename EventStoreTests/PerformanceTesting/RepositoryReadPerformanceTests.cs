@@ -12,7 +12,7 @@ namespace EventStoreTests.PerformanceTesting
     public class RepositoryReadPerformanceTests
     {
         [Test]
-        [Ignore("Performance test")]
+        //[Ignore("Performance test")]
         public void ReadOneMillionFromSqlite()
         {
             int numberOfEvents = 1000000;
@@ -34,7 +34,8 @@ namespace EventStoreTests.PerformanceTesting
                     {
                         AggregateId = Guid.NewGuid(),
                         SerialId = serialId++,
-                        SerializedEvent = BitConverter.GetBytes(i)
+                        SerializedEvent = BitConverter.GetBytes(i),
+                        EventType = "A type of event"
                     }
                 }
                 }));
@@ -57,7 +58,7 @@ namespace EventStoreTests.PerformanceTesting
         }
 
         [Test]
-        [Ignore("Performance test")]
+        //[Ignore("Performance test")]
         public void ReadOneMillionFromLMDB()
         {
             int numberOfEvents = 1000000;
@@ -79,7 +80,8 @@ namespace EventStoreTests.PerformanceTesting
                     {
                         AggregateId = Guid.NewGuid(),
                         SerialId = serialId++,
-                        SerializedEvent = BitConverter.GetBytes(i)
+                        SerializedEvent = BitConverter.GetBytes(i),
+                        EventType = "A type of event"
                     }
                 }
                 }));
