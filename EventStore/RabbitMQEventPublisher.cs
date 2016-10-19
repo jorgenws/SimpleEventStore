@@ -11,7 +11,7 @@ namespace SimpleEventStore
         IConnection _connection;
         IModel _channel;
 
-        IBinaryPublishedEventsSerializer Serializer { get { return _configuration.BinarySerializer; } }
+        IBinaryEventsSerializer Serializer { get { return _configuration.BinarySerializer; } }
 
         public RabbitMQEventPublisher(RabbitMQConfiguration configuration)
         {
@@ -85,9 +85,9 @@ namespace SimpleEventStore
     {
         internal string HostName { get; private set; }
         internal string ExchangeName { get; private set; }
-        internal IBinaryPublishedEventsSerializer BinarySerializer { get; private set; }
+        internal IBinaryEventsSerializer BinarySerializer { get; private set; }
 
-        public RabbitMQConfiguration(string hostName, string exchangeName, IBinaryPublishedEventsSerializer serializer)
+        public RabbitMQConfiguration(string hostName, string exchangeName, IBinaryEventsSerializer serializer)
         {
             HostName = hostName;
             ExchangeName = exchangeName;

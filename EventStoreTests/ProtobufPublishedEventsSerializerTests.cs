@@ -27,11 +27,11 @@ namespace EventStoreTests
                 }
             };
 
-            var serializer = new ProtobufPublishedEventsSerializer();
+            var serializer = new ProtobufEventsSerializer();
 
             byte[] result = serializer.Serialize(events);
 
-            var publishedEvents = serializer.Deserialize(result);
+            var publishedEvents = serializer.DeserializeEventTransaction(result);
             var publishedEvent = publishedEvents.Events[0];
 
             Assert.AreEqual(aggreagateId, publishedEvents.Events[0].AggregateId);
@@ -67,11 +67,11 @@ namespace EventStoreTests
                 }
             };
 
-            var serializer = new ProtobufPublishedEventsSerializer();
+            var serializer = new ProtobufEventsSerializer();
 
             byte[] result = serializer.Serialize(events);
 
-            var publishedEvents = serializer.Deserialize(result);
+            var publishedEvents = serializer.DeserializeEventTransaction(result);
             var publishedEvent = publishedEvents.Events[0];
 
             Assert.AreEqual(aggreagateId1, publishedEvents.Events[0].AggregateId);

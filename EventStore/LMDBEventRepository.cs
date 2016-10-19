@@ -11,11 +11,14 @@ namespace SimpleEventStore
         private const string AggregateIndex = "aggregateIndex";
 
         private readonly LightningEnvironment _environment;
+        private readonly IBinaryEventsSerializer _serializer;
 
         private int _nextSerialNumber;
 
         public LMDBEventRepository(LMDBRepositoryConfiguration configuration)
         {
+            _serializer = new ProtobufEventsSerializer();
+
             _environment = new LightningEnvironment(configuration.EnvironmentPath);
             _environment.MaxDatabases = configuration.MaxDatabases;
             _environment.MapSize = configuration.MapSize;
@@ -37,7 +40,8 @@ namespace SimpleEventStore
                         byte[] nextSerialNumber = BitConverter.GetBytes(@event.SerialId);
                         byte[] aggregateId = @event.AggregateId.ToByteArray();
 
-                        tx.Put(eventDb, nextSerialNumber, @event.SerializedEvent, PutOptions.AppendData);
+                        var serializedEvent = _serializer.Serialize(@event);
+                        tx.Put(eventDb, nextSerialNumber, serializedEvent, PutOptions.AppendData);
                         tx.Put(aggregateIndex, aggregateId, nextSerialNumber, PutOptions.AppendDuplicateData);
                     }
                 }
@@ -87,7 +91,9 @@ namespace SimpleEventStore
                 do
                 {
                     KeyValuePair<byte[], byte[]> eventId = aggregateIndexCursor.GetCurrent();
-                    events.Add(new Event { SerializedEvent = tx.Get(eventsDb, eventId.Value) });
+                    var serializedEvent = tx.Get(eventsDb, eventId.Value);
+                    var @event = _serializer.DeserializeEvent(serializedEvent);
+                    events.Add(@event);
                 } while (aggregateIndexCursor.MoveNextDuplicate());
             }
 
@@ -115,7 +121,9 @@ namespace SimpleEventStore
                 do
                 {
                     KeyValuePair<byte[], byte[]> eventId = aggregateIndexCursor.GetCurrent();
-                    events.Add(new Event { SerializedEvent = tx.Get(eventsDb, eventId.Value) });
+                    var serializedEvent = tx.Get(eventsDb, eventId.Value);
+                    var @event = _serializer.DeserializeEvent(serializedEvent);
+                    events.Add(@event);
                 } while (aggregateIndexCursor.MoveNextDuplicate());
             }
 
@@ -135,7 +143,8 @@ namespace SimpleEventStore
                 //eventsCursor.MoveToAndGet(fromAsBytes); //Buggy
                 eventsCursor.MoveTo(fromAsBytes);
                 eventsCursor.GetCurrent();
-                events.Add(new Event {SerializedEvent = eventsCursor.Current.Value});
+                var @event = _serializer.DeserializeEvent(eventsCursor.Current.Value);
+                events.Add(@event);
 
                 bool reachedTo = false;
                 while (!reachedTo && eventsCursor.MoveNext())

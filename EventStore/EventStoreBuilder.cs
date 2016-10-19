@@ -57,7 +57,7 @@ namespace SimpleEventStore
             return this;
         }
 
-        public IEventRepositoryBuild Configuration(string hostName, string exchangeName, IBinaryPublishedEventsSerializer serializer)
+        public IEventRepositoryBuild Configuration(string hostName, string exchangeName, IBinaryEventsSerializer serializer)
         {
             _rabbitMQConfiguration = new RabbitMQConfiguration(hostName, exchangeName, serializer);
             return this;
@@ -141,7 +141,7 @@ namespace SimpleEventStore
 
     public interface IRabbitMqConfigurationBuilder
     {
-        IEventRepositoryBuild Configuration(string hostName, string exchangeName, IBinaryPublishedEventsSerializer serializer);
+        IEventRepositoryBuild Configuration(string hostName, string exchangeName, IBinaryEventsSerializer serializer);
     }
 
     public interface IEventRepositoryBuild

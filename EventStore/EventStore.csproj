@@ -63,13 +63,13 @@
     <Compile Include="EventStore.cs" />
     <Compile Include="EventTransaction.cs" />
     <Compile Include="EventStoreBuilder.cs" />
-    <Compile Include="IBinaryPublishedEventsSerializer.cs" />
+    <Compile Include="IBinaryEventsSerializer.cs" />
     <Compile Include="IEventPublisher.cs" />
     <Compile Include="IEventRepository.cs" />
     <Compile Include="LMDBEventRepository.cs" />
     <Compile Include="LMDBRepositoryConfiguration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ProtobufPublishedEventsSerializer.cs" />
+    <Compile Include="ProtobufEventsSerializer.cs" />
     <Compile Include="PublisherQueue.cs" />
     <Compile Include="RabbitMQEventPublisher.cs" />
     <Compile Include="SQLiteEventRepository.cs" />
