@@ -9,7 +9,7 @@ namespace SimpleEventStore
     public class EventStore : IDisposable
     {
         private readonly BlockingCollection<TransactionTask> _writerQueue;
-        private readonly BlockingCollection<TransactionTask> _publisherQueue;
+        private readonly BlockingCollection<EventTransaction> _publisherQueue;
         private readonly PublisherEnqueuer _publisherEnqueuer;
         private readonly IEventRepository _repository;
         private readonly IEventPublisher _publisher;
@@ -24,7 +24,7 @@ namespace SimpleEventStore
             _repository = repository;
             _publisher = publisher;
             _writerQueue = new BlockingCollection<TransactionTask>(BufferSize);
-            _publisherQueue = new BlockingCollection<TransactionTask>(BufferSize);
+            _publisherQueue = new BlockingCollection<EventTransaction>(BufferSize);
             _publisherEnqueuer = new PublisherEnqueuer(_publisherQueue);
             
             //ToDo: Look into using continuation to catch that the task died and recreate it if possible.
@@ -44,7 +44,7 @@ namespace SimpleEventStore
 
             //trys to add for ten millisecond. Not sure what is a good timeout here, but at least it wont block indefinitely
             if (!_writerQueue.TryAdd(transactionTask, 10))
-                tcs.SetResult(false);
+                tcs.SetException(new TimeoutException("Timed out while waiting to add to persistence queue"));
 
             return tcs.Task;
         }

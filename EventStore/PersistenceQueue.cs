@@ -45,14 +45,12 @@ namespace SimpleEventStore
                     transactionBatch.Add(message);
 
                 var writeSuccess = TryWrite(transactionBatch);
-                if (writeSuccess)
+
+                foreach (var task in transactionBatch)
                 {
-                    foreach (var transaction in transactionBatch)
-                    {
-                        transaction.IsWritten = true;
-                        _publisherEnqueuer.Enqueue(transaction);
-                    }
-                        
+                    task.Finish(writeSuccess);
+                    if (writeSuccess)
+                        _publisherEnqueuer.Enqueue(task.Transaction);
                 }
             }
 

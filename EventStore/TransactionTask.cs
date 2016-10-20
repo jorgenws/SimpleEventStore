@@ -7,9 +7,6 @@ namespace SimpleEventStore
     {
         public EventTransaction Transaction { get; private set; }
 
-        public bool IsWritten { get; set; }
-        public bool IsPublished { get; set; }
-
         private readonly TaskCompletionSource<bool> _tcs;
 
         public TransactionTask(EventTransaction transaction, TaskCompletionSource<bool> tcs)
@@ -18,9 +15,9 @@ namespace SimpleEventStore
             _tcs = tcs;
         }
 
-        public void Finish()
+        public void Finish(bool isPersisted)
         {
-            _tcs.SetResult(IsWritten);
+            _tcs.SetResult(isPersisted);
         }
 
         public void Finish(Exception exception)

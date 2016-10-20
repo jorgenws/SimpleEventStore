@@ -6,10 +6,10 @@ namespace SimpleEventStore
 {
     internal class PublisherQueue
     {
-        BlockingCollection<TransactionTask> _publishQueue;
+        BlockingCollection<EventTransaction> _publishQueue;
         IEventPublisher _publisher;
 
-        public PublisherQueue(BlockingCollection<TransactionTask> publishQueue,
+        public PublisherQueue(BlockingCollection<EventTransaction> publishQueue,
                               IEventPublisher eventPublisher)
         {
             _publishQueue = publishQueue;
@@ -18,12 +18,12 @@ namespace SimpleEventStore
 
         public void Consume()
         {
-            TransactionTask task;
+            EventTransaction transaction;
             while (!_publishQueue.IsCompleted)
             {
                 try
                 {
-                    task = _publishQueue.Take();
+                    transaction = _publishQueue.Take();
                 }
                 catch (InvalidOperationException)
                 {
@@ -32,15 +32,14 @@ namespace SimpleEventStore
                     break;
                 }
 
-                task.IsPublished = TryPublish(task);
+                TryPublish(transaction);
 
-                task.Finish();
             }
 
             _publishQueue.Dispose();
         }
 
-        private bool TryPublish(TransactionTask transactionBatch)
+        private bool TryPublish(EventTransaction transaction)
         {
             bool success = false;
             int retriesLeft = 5;
@@ -49,7 +48,7 @@ namespace SimpleEventStore
 
             while (!success && retriesLeft > 0)
             {
-                success = _publisher.Publish(transactionBatch.Transaction);
+                success = _publisher.Publish(transaction);
                 retriesLeft--;
             }
 
@@ -59,16 +58,16 @@ namespace SimpleEventStore
 
     internal class PublisherEnqueuer
     {
-        BlockingCollection<TransactionTask> _publisherQueue;
+        BlockingCollection<EventTransaction> _publisherQueue;
 
-        public PublisherEnqueuer(BlockingCollection<TransactionTask> publisherQueue)
+        public PublisherEnqueuer(BlockingCollection<EventTransaction> publisherQueue)
         {
             _publisherQueue = publisherQueue;
         }
 
-        public void Enqueue(TransactionTask transactionTask)
+        public void Enqueue(EventTransaction transaction)
         {
-            _publisherQueue.Add(transactionTask);
+            _publisherQueue.Add(transaction);
         }
     }
 }
