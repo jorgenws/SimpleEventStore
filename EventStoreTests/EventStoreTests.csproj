@@ -125,6 +125,10 @@
       <Project>{d8e8bd25-e0fc-436b-bd9a-e35040d16b87}</Project>
       <Name>EventStore</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Event\Event.csproj">
+      <Project>{4d388182-0b9b-4652-bab5-7060a348c941}</Project>
+      <Name>Event</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />

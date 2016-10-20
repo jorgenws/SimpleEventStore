@@ -86,7 +86,9 @@ namespace EventStoreTests
                 Events = new[] { @event }
             };
 
-            Assert.Throws<InvalidOperationException>(()=>eventStore.Process(transaction));
+            var task = eventStore.Process(transaction);
+
+            Assert.IsInstanceOf<InvalidOperationException>(task.Exception.InnerException);
         }
     }
 }

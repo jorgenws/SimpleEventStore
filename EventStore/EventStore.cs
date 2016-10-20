@@ -36,11 +36,11 @@ namespace SimpleEventStore
 
         public Task<bool> Process(EventTransaction eventTransaction)
         {
-            if (eventTransaction.Events.Any(c => c.AggregateId == Guid.Empty || string.IsNullOrWhiteSpace(c.EventType) || c.SerializedEvent == null || !c.SerializedEvent.Any()))
-                throw new InvalidOperationException("AggregateId, EventType and SerializedEvent can not be empty");
-
             var tcs = new TaskCompletionSource<bool>();
             var transactionTask = new TransactionTask(eventTransaction, tcs);
+
+            if (eventTransaction.Events.Any(c => c.AggregateId == Guid.Empty || string.IsNullOrWhiteSpace(c.EventType) || c.SerializedEvent == null || !c.SerializedEvent.Any()))
+                tcs.SetException(new InvalidOperationException("AggregateId, EventType and SerializedEvent can not be empty"));
 
             //trys to add for ten millisecond. Not sure what is a good timeout here, but at least it wont block indefinitely
             if (!_writerQueue.TryAdd(transactionTask, 10))
