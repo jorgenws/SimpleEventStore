@@ -75,6 +75,9 @@ namespace SimpleEventStore
                 retriesLeft--;
             }
 
+            if (!success)
+                _repository.ResetSerialNumber();
+
             return success;
         }
 

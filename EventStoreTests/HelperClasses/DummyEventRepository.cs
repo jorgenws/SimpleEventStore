@@ -28,6 +28,8 @@ namespace EventStoreTests.HelperClasses
             return 0;
         }
 
+        public void ResetSerialNumber() { }
+
         public bool WriteEvents(List<EventTransaction> eventTransaction)
         {
             return true;

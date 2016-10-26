@@ -228,5 +228,10 @@ namespace SimpleEventStore
         {
             return _nextSerialNumber++;
         }
+
+        public void ResetSerialNumber()
+        {
+            InitSerialNumber();
+        }
     }
 }

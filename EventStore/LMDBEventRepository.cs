@@ -29,24 +29,30 @@ namespace SimpleEventStore
 
         public bool WriteEvents(List<EventTransaction> eventTransactions)
         {
-            using (var tx = _environment.BeginTransaction())
-            using (var eventDb = tx.OpenDatabase(EventDb, new DatabaseConfiguration { Flags = DatabaseOpenFlags.Create | DatabaseOpenFlags.IntegerKey }))
-            using (var aggregateIndex = tx.OpenDatabase(AggregateIndex, new DatabaseConfiguration { Flags = DatabaseOpenFlags.Create | DatabaseOpenFlags.DuplicatesSort }))
+            try
             {
-                foreach (var transaction in eventTransactions)
+                using (var tx = _environment.BeginTransaction())
+                using (var eventDb = tx.OpenDatabase(EventDb, new DatabaseConfiguration { Flags = DatabaseOpenFlags.Create | DatabaseOpenFlags.IntegerKey }))
+                using (var aggregateIndex = tx.OpenDatabase(AggregateIndex, new DatabaseConfiguration { Flags = DatabaseOpenFlags.Create | DatabaseOpenFlags.DuplicatesSort }))
                 {
-                    foreach (var @event in transaction.Events)
+                    foreach (var transaction in eventTransactions)
                     {
-                        byte[] nextSerialNumber = BitConverter.GetBytes(@event.SerialId);
-                        byte[] aggregateId = @event.AggregateId.ToByteArray();
+                        foreach (var @event in transaction.Events)
+                        {
+                            byte[] nextSerialNumber = BitConverter.GetBytes(@event.SerialId);
+                            byte[] aggregateId = @event.AggregateId.ToByteArray();
 
-                        var serializedEvent = _serializer.Serialize(@event);
-                        tx.Put(eventDb, nextSerialNumber, serializedEvent, PutOptions.AppendData);
-                        tx.Put(aggregateIndex, aggregateId, nextSerialNumber, PutOptions.AppendDuplicateData);
+                            var serializedEvent = _serializer.Serialize(@event);
+                            tx.Put(eventDb, nextSerialNumber, serializedEvent, PutOptions.AppendData);
+                            tx.Put(aggregateIndex, aggregateId, nextSerialNumber, PutOptions.AppendDuplicateData);
+                        }
                     }
-                }
 
-                tx.Commit();
+                    tx.Commit();
+                }
+            }catch(Exception)
+            {
+                return false;
             }
 
             return true;
@@ -168,6 +174,11 @@ namespace SimpleEventStore
         public int NextSerialNumber()
         {
             return _nextSerialNumber++;
+        }
+
+        public void ResetSerialNumber()
+        {
+            _nextSerialNumber = InitSerialNumber();
         }
     }
 }
