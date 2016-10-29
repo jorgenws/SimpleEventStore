@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SimpleEventStore
+namespace Events
 {
     public class Event
     {

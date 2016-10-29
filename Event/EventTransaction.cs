@@ -1,4 +1,4 @@
-﻿namespace SimpleEventStore
+﻿namespace Events
 {
     public class EventTransaction
     {

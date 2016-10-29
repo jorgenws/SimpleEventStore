@@ -3,6 +3,7 @@ using SimpleEventStore;
 using NUnit.Framework;
 using System.IO;
 using EventStoreTests.HelperClasses;
+using EventSerialization;
 
 namespace EventStoreTests
 {
@@ -34,7 +35,7 @@ namespace EventStoreTests
 
             EventStore es = null;
             Assert.DoesNotThrow(() => es = builder.UseLMDBRepository()
-                                                  .Configuration(@"c:\lmdb", 2, 10485760)
+                                                  .Configuration(@"c:\lmdb", 2, 10485760, new ProtobufEventsSerializer())
                                                   .UseCustom(new DummyEventPublisher())
                                                   .Build());
 

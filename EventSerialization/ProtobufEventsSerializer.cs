@@ -1,10 +1,12 @@
 ﻿using System.IO;
 using ProtoBuf;
 using ProtoBuf.Meta;
+using SimpleEventStore;
+using Events;
 
-namespace SimpleEventStore
+namespace EventSerialization
 {
-    internal class ProtobufEventsSerializer : IBinaryEventsSerializer
+    public class ProtobufEventsSerializer : IBinaryEventsSerializer
     {
         public ProtobufEventsSerializer()
         {

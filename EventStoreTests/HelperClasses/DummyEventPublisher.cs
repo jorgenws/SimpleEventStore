@@ -1,4 +1,5 @@
-﻿using SimpleEventStore;
+﻿using Events;
+using SimpleEventStore;
 
 namespace EventStoreTests.HelperClasses
 {

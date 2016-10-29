@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using Events;
+using EventSerialization;
 
 namespace EventStoreTests
 {
@@ -26,7 +28,7 @@ namespace EventStoreTests
         [SetUp]
         public void SetUp()
         {
-            _lmdbEventRepository = new LMDBEventRepository(new LMDBRepositoryConfiguration(EnvironmentPath));
+            _lmdbEventRepository = new LMDBEventRepository(new LMDBRepositoryConfiguration(EnvironmentPath, new ProtobufEventsSerializer()));
         }
 
         [Test]

@@ -1,4 +1,5 @@
-﻿using LightningDB;
+﻿using Events;
+using LightningDB;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,8 +18,7 @@ namespace SimpleEventStore
 
         public LMDBEventRepository(LMDBRepositoryConfiguration configuration)
         {
-            _serializer = new ProtobufEventsSerializer();
-
+            _serializer = configuration.Serializer;
             _environment = new LightningEnvironment(configuration.EnvironmentPath);
             _environment.MaxDatabases = configuration.MaxDatabases;
             _environment.MapSize = configuration.MapSize;

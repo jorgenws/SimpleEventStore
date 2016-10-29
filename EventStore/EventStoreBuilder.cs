@@ -38,9 +38,9 @@ namespace SimpleEventStore
             return this;
         }
 
-        public IEventPublisherBuilder Configuration(string environmentPath, int maxDatabases, long mapSize)
+        public IEventPublisherBuilder Configuration(string environmentPath, int maxDatabases, long mapSize, IBinaryEventsSerializer serializer)
         {
-            _lmdbRepoConfig = new LMDBRepositoryConfiguration(environmentPath, maxDatabases, mapSize);
+            _lmdbRepoConfig = new LMDBRepositoryConfiguration(environmentPath, maxDatabases, mapSize, serializer);
             return this;
         }
 
@@ -125,7 +125,7 @@ namespace SimpleEventStore
 
     public interface ILMDBRepositoryBuilder
     {
-        IEventPublisherBuilder Configuration(string environmentPath, int maxDatabases, long mapSize);
+        IEventPublisherBuilder Configuration(string environmentPath, int maxDatabases, long mapSize, IBinaryEventsSerializer serializer);
     }
 
     public interface ISQLiteRepositoryBuilder

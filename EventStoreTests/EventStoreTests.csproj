@@ -121,6 +121,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\EventSerialization\EventSerialization.csproj">
+      <Project>{f22a8816-01ab-49ee-84be-4b29ca193d71}</Project>
+      <Name>EventSerialization</Name>
+    </ProjectReference>
     <ProjectReference Include="..\EventStore\EventStore.csproj">
       <Project>{d8e8bd25-e0fc-436b-bd9a-e35040d16b87}</Project>
       <Name>EventStore</Name>

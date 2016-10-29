@@ -1,4 +1,6 @@
-﻿namespace SimpleEventStore
+﻿using Events;
+
+namespace SimpleEventStore
 {
     public interface IBinaryEventsSerializer
     {

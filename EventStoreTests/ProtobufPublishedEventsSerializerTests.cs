@@ -1,6 +1,8 @@
 ﻿using System;
 using NUnit.Framework;
 using SimpleEventStore;
+using Events;
+using EventSerialization;
 
 namespace EventStoreTests
 {

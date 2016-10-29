@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Events;
+using System;
 using System.Threading.Tasks;
 
 namespace SimpleEventStore

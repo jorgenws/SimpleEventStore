@@ -4,6 +4,7 @@ using System.Text;
 using Moq;
 using NUnit.Framework;
 using SimpleEventStore;
+using Events;
 
 namespace EventStoreTests
 {

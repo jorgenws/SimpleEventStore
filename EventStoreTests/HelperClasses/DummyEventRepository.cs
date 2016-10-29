@@ -1,4 +1,5 @@
-﻿using SimpleEventStore;
+﻿using Events;
+using SimpleEventStore;
 using System;
 using System.Collections.Generic;
 

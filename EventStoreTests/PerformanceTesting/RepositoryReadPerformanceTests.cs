@@ -5,6 +5,8 @@ using System.Collections.Concurrent;
 using System.Linq;
 using System.Threading.Tasks;
 using EventStoreTests.HelperClasses;
+using Events;
+using EventSerialization;
 
 namespace EventStoreTests.PerformanceTesting
 {
@@ -66,7 +68,7 @@ namespace EventStoreTests.PerformanceTesting
 
             IEventStoreBuilder builder = new EventStoreBuilder();
             var eventStore = builder.UseLMDBRepository()
-                                    .Configuration(@"c:\temp\lmdbevents", 2, 524288000)
+                                    .Configuration(@"c:\temp\lmdbevents", 2, 524288000, new ProtobufEventsSerializer())
                                     .UseCustom(new DummyEventPublisher())
                                     .Build();
 
