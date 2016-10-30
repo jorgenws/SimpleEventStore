@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using ProtoBuf;
 using ProtoBuf.Meta;
-using SimpleEventStore;
 using Events;
 
 namespace EventSerialization

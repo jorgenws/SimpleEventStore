@@ -1,6 +1,6 @@
 ﻿using Events;
 
-namespace SimpleEventStore
+namespace EventSerialization
 {
     public interface IBinaryEventsSerializer
     {

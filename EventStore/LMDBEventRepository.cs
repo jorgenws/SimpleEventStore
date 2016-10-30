@@ -1,4 +1,5 @@
 ﻿using Events;
+using EventSerialization;
 using LightningDB;
 using System;
 using System.Collections.Generic;

@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="IBinaryEventsSerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ProtobufEventsSerializer.cs" />
   </ItemGroup>
@@ -51,10 +52,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\EventStore\EventStore.csproj">
-      <Project>{d8e8bd25-e0fc-436b-bd9a-e35040d16b87}</Project>
-      <Name>EventStore</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Event\Event.csproj">
       <Project>{4d388182-0b9b-4652-bab5-7060a348c941}</Project>
       <Name>Event</Name>

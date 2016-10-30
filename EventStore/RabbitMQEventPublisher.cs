@@ -1,4 +1,5 @@
 ﻿using Events;
+using EventSerialization;
 using RabbitMQ.Client;
 using System;
 using System.Linq;

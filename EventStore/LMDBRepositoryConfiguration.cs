@@ -1,4 +1,6 @@
-﻿namespace SimpleEventStore
+﻿using EventSerialization;
+
+namespace SimpleEventStore
 {
     internal class LMDBRepositoryConfiguration
     {

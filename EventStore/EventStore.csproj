@@ -61,7 +61,6 @@
     <Compile Include="PersistenceQueue.cs" />
     <Compile Include="EventStore.cs" />
     <Compile Include="EventStoreBuilder.cs" />
-    <Compile Include="IBinaryEventsSerializer.cs" />
     <Compile Include="IEventPublisher.cs" />
     <Compile Include="IEventRepository.cs" />
     <Compile Include="LMDBEventRepository.cs" />
@@ -79,6 +78,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\EventSerialization\EventSerialization.csproj">
+      <Project>{f22a8816-01ab-49ee-84be-4b29ca193d71}</Project>
+      <Name>EventSerialization</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Event\Event.csproj">
       <Project>{4d388182-0b9b-4652-bab5-7060a348c941}</Project>
       <Name>Event</Name>
