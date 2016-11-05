@@ -41,7 +41,7 @@ namespace SimpleEventStore
             {
                 //Index slows down inserts and the slow down increases with the size of the table.
                 command.CommandText = string.Format("BEGIN;"+
-                                                    "CREATE TABLE IF NOT EXISTS Events ({0} TEXT(36) NOT NULL, {1} DateTime NOT NULL, {2} TEXT NOT NULL, {3} BLOB NPT NULL, {4} INTEGER NOT NULL);"+
+                                                    "CREATE TABLE IF NOT EXISTS Events ({0} TEXT(36) NOT NULL, {1} DateTime NOT NULL, {2} TEXT NOT NULL, {3} BLOB NOT NULL, {4} INTEGER NOT NULL);"+
                                                     "CREATE INDEX IF NOT EXISTS serialIdIndex ON Events ({4});"+
                                                     "COMMIT;",
                                                     aggregateIdField,
