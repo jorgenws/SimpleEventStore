@@ -35,7 +35,6 @@ namespace EventSerialization
             using (var ms = new MemoryStream())
             {
                 Serializer.Serialize(ms, item);
-                ms.Position = 0;
                 return ms.ToArray();
             }
         }
