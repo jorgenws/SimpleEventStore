@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 using Moq;
-using NUnit.Framework;
+using Xunit;
 using SimpleEventStore;
 using Events;
 
 namespace EventStoreTests
 {
-    [TestFixture]
     public class EventStoreTests
     {
         private readonly Guid _aggregateId = Guid.Parse("{A4067EB4-7523-4253-B788-0EE2E758E297}");
@@ -16,7 +15,7 @@ namespace EventStoreTests
         private Mock<IEventRepository> _repository;
         private Mock<IEventPublisher> _publisher;
 
-        [Test]
+        [Fact]
         public void SendEventsToConsumerGetsSentToRepositoryAndPublisher()
         {
             _repository = new Mock<IEventRepository>();
@@ -47,35 +46,52 @@ namespace EventStoreTests
             eventStore.Dispose();
         }
 
-        static IEnumerable<Event> FailingEvents()
+        public static IEnumerable<object[]> FailingEvents
         {
-            yield return new Event
+            get
             {
-                AggregateId = Guid.Empty,
-                EventType = "some type",
-                SerializedEvent = Encoding.UTF8.GetBytes("some data")
-            };
-            yield return new Event
-            {
-                AggregateId = Guid.NewGuid(),
-                EventType = null,
-                SerializedEvent = Encoding.UTF8.GetBytes("some data")
-            };
-            yield return new Event
-            {
-                AggregateId = Guid.NewGuid(),
-                EventType = "some type",
-                SerializedEvent = null
-            };
-            yield return new Event
-            {
-                AggregateId = Guid.NewGuid(),
-                EventType = "some type",
-                SerializedEvent = new byte[0]
-            };
+                yield return new object[]
+                {
+                    new Event
+                    {
+                        AggregateId = Guid.Empty,
+                        EventType = "some type",
+                        SerializedEvent = Encoding.UTF8.GetBytes("some data")
+                    }
+                };
+
+                yield return new object[]
+                {
+                    new Event
+                    {
+                        AggregateId = Guid.NewGuid(),
+                        EventType = null,
+                        SerializedEvent = Encoding.UTF8.GetBytes("some data")
+                    }
+                };
+                yield return new object[]
+                {
+                    new Event
+                    {
+                        AggregateId = Guid.NewGuid(),
+                        EventType = "some type",
+                        SerializedEvent = null
+                    }
+                };
+                yield return new object[]
+                {
+                    new Event
+                    {
+                        AggregateId = Guid.NewGuid(),
+                        EventType = "some type",
+                        SerializedEvent = new byte[0]
+                    }
+                };
+            }
         }
 
-        [TestCaseSource(nameof(FailingEvents))]
+        [Theory]
+        [MemberData(nameof(FailingEvents))]
         public void SendEventWithMissingValuesThrowsException(Event @event)
         {
             _repository = new Mock<IEventRepository>();
@@ -89,7 +105,7 @@ namespace EventStoreTests
 
             var task = eventStore.Process(transaction);
 
-            Assert.IsInstanceOf<InvalidOperationException>(task.Exception.InnerException);
+            Assert.IsType<InvalidOperationException>(task.Exception.InnerException);
         }
     }
 }

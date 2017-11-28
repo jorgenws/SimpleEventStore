@@ -1,5 +1,5 @@
 ﻿using SimpleEventStore;
-using NUnit.Framework;
+using Xunit;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,13 +8,12 @@ using Events;
 
 namespace EventStoreTests
 {
-    [TestFixture]
     public class SQLiteEventRepositoryTests
     {
         private readonly Guid _aggregateId = Guid.Parse("{54A89539-D4CA-4061-AA6A-3F4719D8EBF3}");
         private const string EventType = "AEventType";
 
-        [Test]
+        [Fact]
         public void EventIsSavedAndLoadedSuccesfully()
         {
             const string somethingThatHappend = "some data that has happend";
@@ -39,14 +38,14 @@ namespace EventStoreTests
 
             var eventsForAggregate = repository.GetEventsForAggregate(_aggregateId);
 
-            Assert.IsTrue(success);
+            Assert.True(success);
 
-            CollectionAssert.IsNotEmpty(eventsForAggregate);
-            Assert.AreEqual(somethingThatHappend, Encoding.UTF8.GetString(eventsForAggregate.First().SerializedEvent));
+            Assert.NotEmpty(eventsForAggregate);
+            Assert.Equal(somethingThatHappend, Encoding.UTF8.GetString(eventsForAggregate.First().SerializedEvent));
 
         }
 
-        [Test]
+        [Fact]
         public void AllEventsInTransactionAreSavedAndLoadedSuccesfully()
         {
             const string somethingThatHappend = "some data that has happend";
@@ -78,14 +77,14 @@ namespace EventStoreTests
 
             var eventsForAggregate = repository.GetEventsForAggregate(_aggregateId);
 
-            Assert.IsTrue(success);
+            Assert.True(success);
 
-            Assert.AreEqual(2, eventsForAggregate.Length);
-            Assert.AreEqual(somethingThatHappend, Encoding.UTF8.GetString(eventsForAggregate[0].SerializedEvent));
-            Assert.AreEqual(somethingThatHappend, Encoding.UTF8.GetString(eventsForAggregate[1].SerializedEvent));
+            Assert.Equal(2, eventsForAggregate.Length);
+            Assert.Equal(somethingThatHappend, Encoding.UTF8.GetString(eventsForAggregate[0].SerializedEvent));
+            Assert.Equal(somethingThatHappend, Encoding.UTF8.GetString(eventsForAggregate[1].SerializedEvent));
         }
 
-        [Test]
+        [Fact]
         public void MultipleEventsAreSavedAndLoadedSuccesfully()
         {
             const string somethingThatHappend = "some data that has happend";
@@ -112,14 +111,14 @@ namespace EventStoreTests
 
             var eventsForAggregate = repository.GetEventsForAggregate(_aggregateId);
 
-            Assert.IsTrue(success);
-            Assert.IsTrue(success2);
+            Assert.True(success);
+            Assert.True(success2);
 
-            Assert.AreEqual(2, eventsForAggregate.Length);
-            Assert.AreEqual(somethingThatHappend, Encoding.UTF8.GetString(eventsForAggregate.First().SerializedEvent));
+            Assert.Equal(2, eventsForAggregate.Length);
+            Assert.Equal(somethingThatHappend, Encoding.UTF8.GetString(eventsForAggregate.First().SerializedEvent));
         }
 
-        [Test]
+        [Fact]
         public void EventsFromMultipleAggregateAreSavedReturnsAllEventsForOneAggregate()
         {
             Guid aggregateId2 = Guid.Parse("{EA623EF5-A370-4CDB-8D8C-680CE89FD799}");
@@ -167,11 +166,11 @@ namespace EventStoreTests
 
             var eventsForAggregate = repository.GetEventsForAggregate(aggregateId2);
             
-            Assert.AreEqual(1, eventsForAggregate.Length);
-            Assert.AreEqual(eventData, Encoding.UTF8.GetString(eventsForAggregate.First().SerializedEvent));
+            Assert.Single(eventsForAggregate);
+            Assert.Equal(eventData, Encoding.UTF8.GetString(eventsForAggregate.First().SerializedEvent));
         }
 
-        [Test]
+        [Fact]
         public void EventsFromMultipleAggregateAreSavedReturnsAllEventsForOneAggregateAfterGivenSerialNumber()
         {
             Guid aggregateId2 = Guid.Parse("{EA623EF5-A370-4CDB-8D8C-680CE89FD799}");
@@ -219,11 +218,11 @@ namespace EventStoreTests
 
             var eventsForAggregate = repository.GetEventsForAggregate(_aggregateId, 1);
 
-            Assert.AreEqual(1, eventsForAggregate.Length);
-            Assert.AreEqual(eventData1, Encoding.UTF8.GetString(eventsForAggregate.First().SerializedEvent));
+            Assert.Single(eventsForAggregate);
+            Assert.Equal(eventData1, Encoding.UTF8.GetString(eventsForAggregate.First().SerializedEvent));
         }
 
-        [Test]
+        [Fact]
         public void NextSerialNumberReturnsNumberIncreasingWithOne()
         {
             var repository = GetInMemorySQLiteEventRepository();
@@ -232,9 +231,9 @@ namespace EventStoreTests
             var second = repository.NextSerialNumber();
             var third = repository.NextSerialNumber();
 
-            Assert.AreEqual(0, first);
-            Assert.AreEqual(1, second);
-            Assert.AreEqual(2, third);
+            Assert.Equal(0, first);
+            Assert.Equal(1, second);
+            Assert.Equal(2, third);
         }
         
         private SQLiteEventRepository GetInMemorySQLiteEventRepository()

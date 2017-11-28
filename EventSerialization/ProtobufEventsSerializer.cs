@@ -7,17 +7,22 @@ namespace EventSerialization
 {
     public class ProtobufEventsSerializer : IBinaryEventsSerializer
     {
+        static object _lock = new object();
+
         public ProtobufEventsSerializer()
         {
-            if (!RuntimeTypeModel.Default.IsDefined(typeof(Event)))
-                RuntimeTypeModel.Default.Add(typeof(Event), false)
-                                            .Add(1, "AggregateId")
-                                            .Add(2, "SerialId")
-                                            .Add(3, "EventType")
-                                            .Add(4, "SerializedEvent");
-            if (!RuntimeTypeModel.Default.IsDefined(typeof(EventTransaction)))
-                RuntimeTypeModel.Default.Add(typeof(EventTransaction), false)
-                                            .Add(1, "Events");
+            lock (_lock)
+            {
+                if (!RuntimeTypeModel.Default.IsDefined(typeof(Event)))
+                    RuntimeTypeModel.Default.Add(typeof(Event), false)
+                                                .Add(1, "AggregateId")
+                                                .Add(2, "SerialId")
+                                                .Add(3, "EventType")
+                                                .Add(4, "SerializedEvent");
+                if (!RuntimeTypeModel.Default.IsDefined(typeof(EventTransaction)))
+                    RuntimeTypeModel.Default.Add(typeof(EventTransaction), false)
+                                                .Add(1, "Events");
+            }
         }
         
         public byte[] Serialize(EventTransaction eventTransaction)

@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+﻿using Xunit;
 using SimpleEventStore;
 using System;
 using System.Collections.Concurrent;
@@ -10,11 +10,9 @@ using EventSerialization;
 
 namespace EventStoreTests.PerformanceTesting
 {
-    [TestFixture(Category = "Performance")]
     public class RepositoryReadPerformanceTests
     {
-        [Test]
-        [Ignore("Performance test")]
+        [Fact(Skip = "Performance test")]
         public void ReadOneMillionFromSqlite()
         {
             int numberOfEvents = 1000000;
@@ -56,11 +54,10 @@ namespace EventStoreTests.PerformanceTesting
 
             eventStore.Dispose();
 
-            Assert.Pass(string.Format("Read {0} in {1} milliseconds, which is a rate of {2} per second", numberOfEvents, timeInMilliseconds, rate));
+            Assert.True(true, string.Format("Read {0} in {1} milliseconds, which is a rate of {2} per second", numberOfEvents, timeInMilliseconds, rate));
         }
 
-        [Test]
-        [Ignore("Performance test")]
+        [Fact(Skip = "Performance test")]
         public void ReadOneMillionFromLMDB()
         {
             int numberOfEvents = 1000000;
@@ -102,7 +99,7 @@ namespace EventStoreTests.PerformanceTesting
 
             eventStore.Dispose();
 
-            Assert.Pass(string.Format("Read {0} in {1} milliseconds, which is a rate of {2} per second", numberOfEvents, timeInMilliseconds, rate));
+            Assert.True(true, string.Format("Read {0} in {1} milliseconds, which is a rate of {2} per second", numberOfEvents, timeInMilliseconds, rate));
         }
     }
 }

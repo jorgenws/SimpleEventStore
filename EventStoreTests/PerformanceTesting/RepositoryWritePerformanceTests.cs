@@ -1,4 +1,4 @@
-﻿using NUnit.Framework;
+﻿using Xunit;
 using SimpleEventStore;
 using System;
 using System.Collections.Concurrent;
@@ -10,11 +10,9 @@ using EventSerialization;
 
 namespace EventStoreTests.PerformenceTesting
 {
-    [TestFixture(Category = "Performance")]
     public class RepositoryWritePerformanceTests
     {
-        [Test]
-        [Ignore("Performance test")]
+        [Fact(Skip = "Performance test")]
         public void SaveOneMillionEventsWithSqliteAndDummyPublisher()
         {
             int numberOfEvents = 1000000;
@@ -54,11 +52,10 @@ namespace EventStoreTests.PerformenceTesting
 
             eventStore.Dispose();
 
-            Assert.Pass(string.Format("Added {0} in {1} milliseconds, which is a rate of {2} per second", numberOfEvents, timeInMilliseconds, rate));
+            Assert.True(true, string.Format("Added {0} in {1} milliseconds, which is a rate of {2} per second", numberOfEvents, timeInMilliseconds, rate));
         }
 
-        [Test]
-        [Ignore("Performance test")]
+        [Fact(Skip = "Performance test")]
         public void SaveOneMillionEventsWithLMDBAndDummyPublisher()
         {
             int numberOfEvents = 1000000;
@@ -105,7 +102,7 @@ namespace EventStoreTests.PerformenceTesting
 
             eventStore.Dispose();
 
-            Assert.Pass(string.Format("Added {0} in {1} milliseconds, which is a rate of {2} per second", numberOfEvents, timeInMilliseconds, rate));
+            Assert.True(true, string.Format("Added {0} in {1} milliseconds, which is a rate of {2} per second", numberOfEvents, timeInMilliseconds, rate));
         }
     }
 }

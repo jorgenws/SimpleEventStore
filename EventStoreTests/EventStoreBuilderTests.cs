@@ -1,25 +1,24 @@
 ﻿using System;
 using SimpleEventStore;
-using NUnit.Framework;
+using Xunit;
 using System.IO;
 using EventStoreTests.HelperClasses;
 using EventSerialization;
 
 namespace EventStoreTests
 {
-    [TestFixture]
     public class EventStoreBuilderTests
     {
-        [Test]
-        public void BuildSqliteEventStore()
+        [Fact]
+        public void BuildSqliteEventStoreDoesNotThrow()
         {
             IEventStoreBuilder builder = new EventStoreBuilder();
 
             EventStore es = null;
-            Assert.DoesNotThrow(() => es = builder.UseSQLiteRepository()
-                                                  .Configuration("Data Source =:memory:")
-                                                  .UseCustom(new DummyEventPublisher())
-                                                  .Build());
+            es = builder.UseSQLiteRepository()
+                        .Configuration("Data Source =:memory:")
+                        .UseCustom(new DummyEventPublisher())
+                        .Build();
 
             Assert.NotNull(es);
             
@@ -27,35 +26,25 @@ namespace EventStoreTests
             es.Dispose();
         }
 
-        [Test]
-        [Category("Integration")]
-        public void BuildLMDBEventStore()
+        [Fact]
+        [Trait("Category", "Integration")]
+        public void BuildLMDBEventStoreDoesNotThrow()
         {
             IEventStoreBuilder builder = new EventStoreBuilder();
 
             EventStore es = null;
-            Assert.DoesNotThrow(() => es = builder.UseLMDBRepository()
-                                                  .Configuration(@"c:\lmdb", 2, 10485760, new ProtobufEventsSerializer())
-                                                  .UseCustom(new DummyEventPublisher())
-                                                  .Build());
+            es = builder.UseLMDBRepository()
+                        .Configuration(@"c:\lmdb", 2, 10485760, new ProtobufEventsSerializer())
+                        .UseCustom(new DummyEventPublisher())
+                        .Build();
 
             Assert.NotNull(es);
 
             //Clean up database
             es.Dispose();
-        }
 
-        [Test]
-        public void BuildingWithMissingDataThrowsException()
-        {
-            EventStoreBuilder builder = new EventStoreBuilder();
-            Assert.Throws<Exception>(() => builder.Build());
-        }
 
-        [TearDown]
-        public void TearDown()
-        {
-            //Added to clean up after BuildLMDBEventStore
+            //Cleaning up disk
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
@@ -67,6 +56,13 @@ namespace EventStoreTests
             var lockfile = Path.Combine(@"c:\lmdb", "lock.mdb");
             if (File.Exists(lockfile))
                 File.Delete(lockfile);
+        }
+
+        [Fact]
+        public void BuildingWithMissingDataThrowsException()
+        {
+            EventStoreBuilder builder = new EventStoreBuilder();
+            Assert.Throws<Exception>(() => builder.Build());
         }
     }
 }

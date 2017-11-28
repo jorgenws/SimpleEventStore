@@ -1,5 +1,5 @@
 ﻿using SimpleEventStore;
-using NUnit.Framework;
+using Xunit;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,33 +10,28 @@ using EventSerialization;
 
 namespace EventStoreTests
 {
-    [TestFixture(Category = "Integration")]
+    
     public class LMDBEventRepositoryTests
     {
         const string EnvironmentPath = @"c:\lmdb";
 
         private readonly Guid _aggregateId = Guid.Parse("{54A89539-D4CA-4061-AA6A-3F4719D8EBF3}");
 
-        private LMDBEventRepository _lmdbEventRepository;
 
-        [OneTimeSetUp]
-        public void TestFixtureSetUp()
+        public LMDBEventRepositoryTests()
         {
-            RemoveDataFromPreviousRun();
+            //Todo
+            //Remove all files and folders in C:\lmdb
         }
 
-        [SetUp]
-        public void SetUp()
-        {
-            _lmdbEventRepository = new LMDBEventRepository(new LMDBRepositoryConfiguration(EnvironmentPath, new ProtobufEventsSerializer()));
-        }
-
-        [Test]
+        [Fact]
         public void EventIsSavedAndLoadedSuccesfully()
         {
             const string somethingThatHappend = "some data that has happend";
 
-            var repository = _lmdbEventRepository;
+            string tempEnvironmentPath = Path.Combine(EnvironmentPath, Guid.NewGuid().ToString("D"));
+
+            var repository = new LMDBEventRepository(new LMDBRepositoryConfiguration(tempEnvironmentPath, new ProtobufEventsSerializer())); ;
 
             var events = new List<EventTransaction>();
             events.Add(new EventTransaction
@@ -55,19 +50,24 @@ namespace EventStoreTests
 
             var eventsForAggregate = repository.GetEventsForAggregate(_aggregateId);
 
-            Assert.IsTrue(success);
+            Assert.True(success);
 
-            CollectionAssert.IsNotEmpty(eventsForAggregate);
-            Assert.AreEqual(somethingThatHappend, Encoding.UTF8.GetString(eventsForAggregate.First().SerializedEvent));
+            Assert.NotEmpty(eventsForAggregate);
+            Assert.Equal(somethingThatHappend, Encoding.UTF8.GetString(eventsForAggregate.First().SerializedEvent));
 
+            //Cleanup
+            repository.Dispose();
+            RemoveDataFromPreviousRun(tempEnvironmentPath);
         }
 
-        [Test]
+        [Fact]
         public void AllEventsInTransactionAreSavedAndLoadedSuccesfully()
         {
             const string somethingThatHappend = "some data that has happend";
 
-            var repository = _lmdbEventRepository;
+            string tempEnvironmentPath = Path.Combine(EnvironmentPath, Guid.NewGuid().ToString("D"));
+
+            var repository = new LMDBEventRepository(new LMDBRepositoryConfiguration(tempEnvironmentPath, new ProtobufEventsSerializer()));
 
             var events = new List<EventTransaction>();
             events.Add(new EventTransaction
@@ -92,19 +92,25 @@ namespace EventStoreTests
 
             var eventsForAggregate = repository.GetEventsForAggregate(_aggregateId);
 
-            Assert.IsTrue(success);
+            Assert.True(success);
 
-            Assert.AreEqual(2, eventsForAggregate.Length);
-            Assert.AreEqual(somethingThatHappend, Encoding.UTF8.GetString(eventsForAggregate[0].SerializedEvent));
-            Assert.AreEqual(somethingThatHappend, Encoding.UTF8.GetString(eventsForAggregate[1].SerializedEvent));
+            Assert.Equal(2, eventsForAggregate.Length);
+            Assert.Equal(somethingThatHappend, Encoding.UTF8.GetString(eventsForAggregate[0].SerializedEvent));
+            Assert.Equal(somethingThatHappend, Encoding.UTF8.GetString(eventsForAggregate[1].SerializedEvent));
+
+            //Cleanup
+            repository.Dispose();
+            RemoveDataFromPreviousRun(tempEnvironmentPath);
         }
 
-        [Test]
+        [Fact]
         public void MultipleEventsAreSavedAndLoadedSuccesfully()
         {
             const string somethingThatHappend = "some data that has happend";
 
-            var repository = _lmdbEventRepository;
+            string tempEnvironmentPath = Path.Combine(EnvironmentPath, Guid.NewGuid().ToString("D"));
+
+            var repository = new LMDBEventRepository(new LMDBRepositoryConfiguration(tempEnvironmentPath, new ProtobufEventsSerializer()));
 
             var events = new List<EventTransaction>();
             events.Add(new EventTransaction
@@ -136,19 +142,25 @@ namespace EventStoreTests
 
             var eventsForAggregate = repository.GetEventsForAggregate(_aggregateId);
 
-            Assert.IsTrue(success);
-            Assert.IsTrue(success2);
+            Assert.True(success);
+            Assert.True(success2);
 
-            Assert.AreEqual(2, eventsForAggregate.Length);
-            Assert.AreEqual(somethingThatHappend, Encoding.UTF8.GetString(eventsForAggregate.First().SerializedEvent));
+            Assert.Equal(2, eventsForAggregate.Length);
+            Assert.Equal(somethingThatHappend, Encoding.UTF8.GetString(eventsForAggregate.First().SerializedEvent));
+
+            //Cleanup
+            repository.Dispose();
+            RemoveDataFromPreviousRun(tempEnvironmentPath);
         }
 
-        [Test]
+        [Fact]
         public void EventsFromMultipleAggregateAreSavedReturnsAllEventsForOneAggregate()
         {
             Guid aggregateId2 = Guid.Parse("{EA623EF5-A370-4CDB-8D8C-680CE89FD799}");
 
-            var repository = _lmdbEventRepository;
+            string tempEnvironmentPath = Path.Combine(EnvironmentPath, Guid.NewGuid().ToString("D"));
+
+            var repository = new LMDBEventRepository(new LMDBRepositoryConfiguration(tempEnvironmentPath, new ProtobufEventsSerializer()));
 
             var events = new List<EventTransaction>();
             events.Add(new EventTransaction
@@ -188,17 +200,23 @@ namespace EventStoreTests
 
             var eventsForAggregate = repository.GetEventsForAggregate(aggregateId2);
 
-            Assert.AreEqual(1, eventsForAggregate.Length);
-            Assert.AreEqual(eventData, Encoding.UTF8.GetString(eventsForAggregate.First().SerializedEvent));
+            Assert.Single(eventsForAggregate);
+            Assert.Equal(eventData, Encoding.UTF8.GetString(eventsForAggregate.First().SerializedEvent));
+
+            //Cleanup
+            repository.Dispose();
+            RemoveDataFromPreviousRun(tempEnvironmentPath);
         }
 
-        [Test]
+        [Fact]
         public void EventsFromMultipleAggregateAreSavedReturnsAllEventsForOneAggregateAfterGivenSerialNumber()
         {
             Guid aggregateId2 = Guid.Parse("{EA623EF5-A370-4CDB-8D8C-680CE89FD799}");
             const string eventData1 = "Something else";
 
-            var repository = _lmdbEventRepository;
+            string tempEnvironmentPath = Path.Combine(EnvironmentPath, Guid.NewGuid().ToString("D"));
+
+            var repository = new LMDBEventRepository(new LMDBRepositoryConfiguration(tempEnvironmentPath, new ProtobufEventsSerializer()));
 
             var events = new List<EventTransaction>();
             const string eventData = "some data";
@@ -237,16 +255,22 @@ namespace EventStoreTests
 
             var eventsForAggregate = repository.GetEventsForAggregate(_aggregateId, 1);
 
-            Assert.AreEqual(1, eventsForAggregate.Length);
-            Assert.AreEqual(eventData1, Encoding.UTF8.GetString(eventsForAggregate.First().SerializedEvent));
+            Assert.Single(eventsForAggregate);
+            Assert.Equal(eventData1, Encoding.UTF8.GetString(eventsForAggregate.First().SerializedEvent));
+
+            //Cleanup
+            repository.Dispose();
+            RemoveDataFromPreviousRun(tempEnvironmentPath);
         }
 
-        [Test]
+        [Fact]
         public void EventsFromMultipleAggregatesAreSavedAndAllEventsAreLoaded()
         {
             const string somethingThatHappend = "some data that happend";
 
-            var repository = _lmdbEventRepository;
+            string tempEnvironmentPath = Path.Combine(EnvironmentPath, Guid.NewGuid().ToString("D"));
+
+            var repository = new LMDBEventRepository(new LMDBRepositoryConfiguration(tempEnvironmentPath, new ProtobufEventsSerializer()));
 
             var events = new List<EventTransaction>();
             events.Add(new EventTransaction
@@ -281,39 +305,45 @@ namespace EventStoreTests
 
             var x = repository.GetAllEvents(0, 1);
 
-            CollectionAssert.IsNotEmpty(x);
+            Assert.NotEmpty(x);
+
+            //Cleanup
+            repository.Dispose();
+            RemoveDataFromPreviousRun(tempEnvironmentPath);
         }
 
-        [Test]
+        [Fact]
         public void NextSerialNumberReturnsNumberIncreasingWithOne()
         {
-            var repository = _lmdbEventRepository;
+            string tempEnvironmentPath = Path.Combine(EnvironmentPath, Guid.NewGuid().ToString("D"));
+
+            var repository = new LMDBEventRepository(new LMDBRepositoryConfiguration(tempEnvironmentPath, new ProtobufEventsSerializer()));
 
             var first = repository.NextSerialNumber();
             var second = repository.NextSerialNumber();
             var third = repository.NextSerialNumber();
 
-            Assert.AreEqual(0, first);
-            Assert.AreEqual(1, second);
-            Assert.AreEqual(2, third);
+            Assert.Equal(0, first);
+            Assert.Equal(1, second);
+            Assert.Equal(2, third);
+
+            //Cleanup
+            repository.Dispose();
+            RemoveDataFromPreviousRun(tempEnvironmentPath);
         }
 
-        [TearDown]
-        public void TearDown()
+        private void RemoveDataFromPreviousRun(string tempEnvironmentPath)
         {
-            _lmdbEventRepository.Dispose();
-            RemoveDataFromPreviousRun();
-        }
-
-        private void RemoveDataFromPreviousRun()
-        {
-            var datafile = Path.Combine(EnvironmentPath, "data.mdb");
+            var datafile = Path.Combine(tempEnvironmentPath, "data.mdb");
             if (File.Exists(datafile))
                 File.Delete(datafile);
 
-            var lockfile = Path.Combine(EnvironmentPath, "lock.mdb");
+            var lockfile = Path.Combine(tempEnvironmentPath, "lock.mdb");
             if (File.Exists(lockfile))
                 File.Delete(lockfile);
+
+            if (Directory.Exists(tempEnvironmentPath))
+                Directory.Delete(tempEnvironmentPath);
         }
     }
 }
