@@ -33,10 +33,11 @@ namespace EventStoreTests
 
             var repository = new LMDBEventRepository(new LMDBRepositoryConfiguration(tempEnvironmentPath, new ProtobufEventsSerializer())); ;
 
-            var events = new List<EventTransaction>();
-            events.Add(new EventTransaction
+            var events = new List<EventTransaction>
             {
-                Events = new[] {
+                new EventTransaction
+                {
+                    Events = new[] {
                     new Event
                     {
                         AggregateId = _aggregateId,
@@ -44,7 +45,8 @@ namespace EventStoreTests
                         SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend)
                     }
                 }
-            });
+                }
+            };
 
             var success = repository.WriteEvents(events);
 
@@ -69,10 +71,11 @@ namespace EventStoreTests
 
             var repository = new LMDBEventRepository(new LMDBRepositoryConfiguration(tempEnvironmentPath, new ProtobufEventsSerializer()));
 
-            var events = new List<EventTransaction>();
-            events.Add(new EventTransaction
+            var events = new List<EventTransaction>
             {
-                Events = new[] {
+                new EventTransaction
+                {
+                    Events = new[] {
                     new Event
                     {
                         AggregateId = _aggregateId,
@@ -86,7 +89,8 @@ namespace EventStoreTests
                         SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend)
                     }
                 }
-            });
+                }
+            };
 
             var success = repository.WriteEvents(events);
 
@@ -112,10 +116,11 @@ namespace EventStoreTests
 
             var repository = new LMDBEventRepository(new LMDBRepositoryConfiguration(tempEnvironmentPath, new ProtobufEventsSerializer()));
 
-            var events = new List<EventTransaction>();
-            events.Add(new EventTransaction
+            var events = new List<EventTransaction>
             {
-                Events = new[] {
+                new EventTransaction
+                {
+                    Events = new[] {
                     new Event
                     {
                         AggregateId = _aggregateId,
@@ -123,11 +128,13 @@ namespace EventStoreTests
                         SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend)
                     }
                 }
-            });
-            var events2 = new List<EventTransaction>();
-            events2.Add(new EventTransaction
+                }
+            };
+            var events2 = new List<EventTransaction>
             {
-                Events = new[] {
+                new EventTransaction
+                {
+                    Events = new[] {
                     new Event
                     {
                         AggregateId = _aggregateId,
@@ -135,7 +142,8 @@ namespace EventStoreTests
                         SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend)
                     }
                 }
-            });
+                }
+            };
 
             var success = repository.WriteEvents(events);
             var success2 = repository.WriteEvents(events2);
@@ -162,10 +170,11 @@ namespace EventStoreTests
 
             var repository = new LMDBEventRepository(new LMDBRepositoryConfiguration(tempEnvironmentPath, new ProtobufEventsSerializer()));
 
-            var events = new List<EventTransaction>();
-            events.Add(new EventTransaction
+            var events = new List<EventTransaction>
             {
-                Events = new[]
+                new EventTransaction
+                {
+                    Events = new[]
                 {
                     new Event
                     {
@@ -180,7 +189,8 @@ namespace EventStoreTests
                         SerializedEvent = Encoding.UTF8.GetBytes("Something else")
                     }
                 }
-            });
+                }
+            };
 
             const string eventData = "some data";
             events.Add(new EventTransaction
@@ -272,10 +282,11 @@ namespace EventStoreTests
 
             var repository = new LMDBEventRepository(new LMDBRepositoryConfiguration(tempEnvironmentPath, new ProtobufEventsSerializer()));
 
-            var events = new List<EventTransaction>();
-            events.Add(new EventTransaction
+            var events = new List<EventTransaction>
             {
-                Events = new[] {
+                new EventTransaction
+                {
+                    Events = new[] {
                     new Event
                     {
                         AggregateId = Guid.NewGuid(),
@@ -283,7 +294,8 @@ namespace EventStoreTests
                         SerializedEvent = Encoding.UTF8.GetBytes(somethingThatHappend)
                     }
                 }
-            });
+                }
+            };
 
             repository.WriteEvents(events);
 

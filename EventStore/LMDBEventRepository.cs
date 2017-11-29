@@ -5,6 +5,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
+using System.Runtime.CompilerServices;
+[assembly: InternalsVisibleTo("EventStoreTests")]
+
 namespace SimpleEventStore
 {
     internal class LMDBEventRepository : IEventRepository
@@ -20,9 +23,11 @@ namespace SimpleEventStore
         public LMDBEventRepository(LMDBRepositoryConfiguration configuration)
         {
             _serializer = configuration.Serializer;
-            _environment = new LightningEnvironment(configuration.EnvironmentPath);
-            _environment.MaxDatabases = configuration.MaxDatabases;
-            _environment.MapSize = configuration.MapSize;
+            _environment = new LightningEnvironment(configuration.EnvironmentPath)
+            {
+                MaxDatabases = configuration.MaxDatabases,
+                MapSize = configuration.MapSize
+            };
             _environment.Open();
 
             _nextSerialNumber = InitSerialNumber();

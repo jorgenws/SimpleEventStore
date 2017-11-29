@@ -3,7 +3,7 @@ using System;
 
 namespace SimpleEventStore
 {
-    public class EventStoreBuilder : IEventStoreBuilder, ILMDBRepositoryBuilder, ISQLiteRepositoryBuilder, IEventPublisherBuilder, IRabbitMqConfigurationBuilder, IEventRepositoryBuild
+    public class EventStoreBuilder : IEventStoreBuilder, ILMDBRepositoryBuilder/*, ISQLiteRepositoryBuilder*/, IEventPublisherBuilder, IRabbitMqConfigurationBuilder, IEventRepositoryBuild
     {
         private RepositoryType _selectedRepo;
         private SQLiteRepositoryConfiguration _sqliteRepoConfig;
@@ -20,11 +20,11 @@ namespace SimpleEventStore
             return this;
         }
 
-        public ISQLiteRepositoryBuilder UseSQLiteRepository()
-        {
-            _selectedRepo = RepositoryType.SQLite;
-            return this;
-        }
+        //public ISQLiteRepositoryBuilder UseSQLiteRepository()
+        //{
+        //    _selectedRepo = RepositoryType.SQLite;
+        //    return this;
+        //}
 
         public IEventPublisherBuilder UseCustom(IEventRepository repository)
         {
@@ -71,8 +71,8 @@ namespace SimpleEventStore
 
             if (_selectedRepo == RepositoryType.LMDB && _lmdbRepoConfig != null)
                 eventRepository = new LMDBEventRepository(_lmdbRepoConfig);
-            else if (_selectedRepo == RepositoryType.SQLite && _sqliteRepoConfig != null)
-                eventRepository = new SQLiteEventRepository(_sqliteRepoConfig);
+            //else if (_selectedRepo == RepositoryType.SQLite && _sqliteRepoConfig != null)
+            //    eventRepository = new SQLiteEventRepository(_sqliteRepoConfig);
             else if (_selectedRepo == RepositoryType.Custom)
                 eventRepository = _customRepository;
             else
@@ -119,7 +119,7 @@ namespace SimpleEventStore
     public interface IEventStoreBuilder
     {
         ILMDBRepositoryBuilder UseLMDBRepository();
-        ISQLiteRepositoryBuilder UseSQLiteRepository();
+        //ISQLiteRepositoryBuilder UseSQLiteRepository();
         IEventPublisherBuilder UseCustom(IEventRepository repository);
         void Clear();
     }

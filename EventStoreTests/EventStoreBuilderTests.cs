@@ -9,22 +9,22 @@ namespace EventStoreTests
 {
     public class EventStoreBuilderTests
     {
-        [Fact]
-        public void BuildSqliteEventStoreDoesNotThrow()
-        {
-            IEventStoreBuilder builder = new EventStoreBuilder();
+        //[Fact]
+        //public void BuildSqliteEventStoreDoesNotThrow()
+        //{
+        //    IEventStoreBuilder builder = new EventStoreBuilder();
 
-            EventStore es = null;
-            es = builder.UseSQLiteRepository()
-                        .Configuration("Data Source =:memory:")
-                        .UseCustom(new DummyEventPublisher())
-                        .Build();
+        //    EventStore es = null;
+        //    es = builder.UseSQLiteRepository()
+        //                .Configuration("Data Source =:memory:")
+        //                .UseCustom(new DummyEventPublisher())
+        //                .Build();
 
-            Assert.NotNull(es);
+        //    Assert.NotNull(es);
             
-            //Clean up database
-            es.Dispose();
-        }
+        //    //Clean up database
+        //    es.Dispose();
+        //}
 
         [Fact]
         [Trait("Category", "Integration")]
