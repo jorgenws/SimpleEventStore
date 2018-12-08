@@ -1,0 +1,1 @@
+[![Build Status](https://dev.azure.com/jorgenwangsvendsen/SingleWriterEventStore/_apis/build/status/jorgenws.SingleWriterEventStore)](https://dev.azure.com/jorgenwangsvendsen/SingleWriterEventStore/_build/latest?definitionId=1)
